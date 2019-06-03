@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from fabric2 import ThreadingGroup, Connection
+import json
+from collections import Counter, defaultdict
 
 # Reads an ansible inventory -- assumes ec2 nodes -- strips out extra data
 def read_ansible_inventory(fname):
@@ -32,6 +34,20 @@ def print_results(results):
         if len(result.stdout) > 0:
             print('*'*80)
             print("{0.host}\n{1.stdout}".format(connection, result))
+
+def print_summary(results):
+    summary = defaultdict(Counter)
+    for connection, result in results.items():
+        if len(result.stdout) > 0:
+            data = json.loads(result.stdout)
+            for key in data:
+                if key == 'propose_pubkey': continue
+                if key == 'conf_dir': continue
+                summary[key].update([data[key]])
+    for key, counts in summary.items():
+        print(key)
+        for item, count in counts.items():
+             print("\t", count, "@", item)
 
 def tar_logs(group):
     cmd = 'tar -zcvf runlog.tar.gz test-*'
