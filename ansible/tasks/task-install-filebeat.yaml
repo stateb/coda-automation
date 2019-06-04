@@ -1,0 +1,47 @@
+
+
+- set_fact:
+    deb_url: "https://artifacts.elastic.co/downloads/beats/filebeat"
+    deb_filename: "filebeat-oss-7.0.1-amd64.deb"
+
+- name: Download Filebeat Deb
+  get_url:
+    url: "{{ deb_url }}/{{ deb_filename }}"
+    dest: /tmp/{{ deb_filename }}
+    force: no
+
+- name: Install Filebeat
+  become: true
+  shell: dpkg -i /tmp/{{ deb_filename }}
+
+- name: Copy Filebeat Config
+  become: true
+  copy:
+    dest: /etc/filebeat/filebeat.yml
+    content: |
+        filebeat.inputs:
+        - type: log
+          enabled: true
+          json.keys_under_root: true
+          json.add_error_key: true
+          json.overwrite_keys: true
+          overwrite_keys: true
+          paths:
+            - /home/admin/test-*/*.log
+
+        output.elasticsearch:
+          hosts:
+            - "{{ elastic_endpoint }}"
+          protocol: "https"
+
+
+- name: force systemd reload
+  become: true
+  systemd:
+    daemon_reload: yes
+
+- name: Start filebeat
+  become: true
+  systemd:
+    state: started
+    name: filebeat

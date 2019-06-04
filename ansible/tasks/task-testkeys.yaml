@@ -1,0 +1,10 @@
+- name: Create testket Directory
+  file:
+    path: /home/admin/testkeys
+    state: directory
+    mode: '0700'
+
+- name: Copy keys
+  synchronize:
+    src: testkeys
+    dest: /home/admin/

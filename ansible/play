@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Lazy wrapper: Check for variances of input vs existing files
+# eg foo.yaml, foo., foo
+
+playbook=$1
+
+if [ -f $playbook ]; then
+    :
+elif [ -f ${playbook}yaml ]; then
+    playbook+="yaml"
+elif [ -f ${playbook}.yaml ]; then
+    playbook+=".yaml"
+fi
+
+ansible-playbook --vault-password-file=ansible_vault_password -i inventory ${playbook}

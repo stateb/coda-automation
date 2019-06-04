@@ -1,0 +1,4 @@
+- name: Copy Testing Tools
+  synchronize:
+    src: ../scripts
+    dest: /home/admin/

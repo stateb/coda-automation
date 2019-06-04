@@ -1,0 +1,40 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+    - ec2_metadata_facts:
+    - name: Generating coda_start.sh
+      vars:
+        seed: "{{ hostvars[groups['seeds'][0]].ansible_ec2_public_ipv4 }}"
+      template: "src=coda_start.sh.j2 dest='/home/admin/coda_start.sh' owner=admin group=admin mode=0755"
+      tags: coda_start
+    - pause:
+        seconds: 5
+
+- hosts: seeds
+  gather_facts: no
+  tasks:
+    - name: Start Coda
+      shell: /home/admin/coda_start.sh
+      args:
+        executable: /bin/bash
+    - pause:
+        seconds: 5
+
+- hosts: snarkers
+  gather_facts: no
+  tasks:
+    - name: Start Coda
+      shell: /home/admin/coda_start.sh
+      args:
+        executable: /bin/bash
+    - pause:
+        seconds: 5
+
+- hosts: proposers
+  gather_facts: no
+  tasks:
+    - name: Start Coda
+      shell: /home/admin/coda_start.sh
+      args:
+        executable: /bin/bash
