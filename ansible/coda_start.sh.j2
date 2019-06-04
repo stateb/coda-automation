@@ -16,10 +16,10 @@ if [ ! -d "/home/admin/test-coda" ]; then
 fi
 
 # whitelist ips (derived by ansible - global)
-echo "( 127.0.0.1 {% for host in groups['all'] %}{{ hostvars[host].ansible_ec2_public_ipv4 }} {% endfor %})" > /home/admin/test-coda/client_whitelist
+echo "( 127.0.0.1 {% for host in groups['all']  %}{{ hostvars[host].ec2_ip_address }} {% endfor %})" > /home/admin/test-coda/client_whitelist
 
 # external ip (derived by ansible - unique per host)
-EXTERNAL_IP='{{ ansible_ec2_public_ipv4 }}'
+EXTERNAL_IP='{{ ec2_ip_address }}'
 
 CODA_CLIENTPORT=8301
 CODA_RPCPORT=9301
@@ -29,7 +29,7 @@ CODA_QLPORT=$(($CODA_RPCPORT + 3))
 
 CODA_PRIVKEY_PASS=testnet
 
-CODA_SEED="{{ hostvars[groups['seeds'][0]].ansible_ec2_public_ipv4 }}:${CODA_PEERPORT}" # derived from ansible
+CODA_SEED="{{ seed_ip }}:${CODA_PEERPORT}" # derived from ansible
 CODA_ROLE=$(cat /etc/coda-rolename)
 
 if [ -e /etc/coda-proposer_order ]; then
@@ -83,7 +83,7 @@ case $CODA_ROLE in
     sleep 10 # wait for daemon to come up
     export OMP_NUM_THREADS=8
     while [ "$(pgrep  -f 'coda internal snark-worker' | wc -l)" -lt "$CORE_SCALE" ]; do
-        /home/admin/testing/snark-worker.sh
+        /home/admin/scripts/snark-worker.sh
         sleep 5 # wait for it to come up
     done
     ;;
@@ -92,7 +92,7 @@ case $CODA_ROLE in
     sleep 10 # wait for daemon to come up
     export OMP_NUM_THREADS=8
     while [ "$(pgrep  -f 'coda internal snark-worker' | wc -l)" -lt "$CORE_SCALE" ]; do
-        nice /home/admin/testing/snark-worker.sh {{ hostvars[groups['snarkers'][0]].ansible_ec2_public_ipv4 }}:8301
+        nice /home/admin/scripts/snark-worker.sh {{ snarker_ip }}:8301
         sleep 5 # wait for it to come up
     done
     ;;

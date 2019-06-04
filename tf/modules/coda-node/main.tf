@@ -30,8 +30,9 @@ resource "aws_instance" "coda_node" {
   associate_public_ip_address = "${var.use_eip}"
 
   tags = {
-    Name = "${var.netname}_${var.region}_${var.rolename}_${count.index}"
-    Role = "${var.rolename}"
+    name = "${var.netname}_${var.region}_${var.rolename}_${count.index}"
+    role = "${var.rolename}"
+    testnet = "${var.netname}"
   }
 
   # Default root is 8GB

@@ -33,7 +33,7 @@
     - include: tasks/task-install-filebeat.yaml
 
 # Assign a unique ID to each proposer (so proof of stake works)
-- hosts: proposers
+- hosts: tag_role_proposer
   gather_facts: no
   tasks:
     - name: Unique ID
