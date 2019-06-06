@@ -10,10 +10,10 @@ variable "netname" {
   default     = "NONETNAMESET"
 }
 
-variable "port_dht" {
-  description = "Port DHT protocol communicates over"
+variable "port_rpc" {
+  description = "Port RPC protocol communicates over"
   type        = number
-  default     = 8303
+  default     = 8301
 }
 
 variable "port_gossip" {
@@ -22,16 +22,16 @@ variable "port_gossip" {
   default     = 8302
 }
 
+variable "port_dht" {
+  description = "Port DHT protocol communicates over"
+  type        = number
+  default     = 8303
+}
+
 variable "port_ql" {
   description = "Port GraphQL endpoint is listening on"
   type        = number
-  default     = 8375
-}
-
-variable "port_rpc" {
-  description = "Port RPC protocol communicates over"
-  type        = number
-  default     = 8301
+  default     = 8304
 }
 
 variable "public_key" {

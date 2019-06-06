@@ -1,5 +1,5 @@
 locals {
-  netname    = "testnet20190601"                                                                                                                                                                                                                                                                                                                                                                                      # see also backend key
+  netname    = "20190601"                                                                                                                                                                                                                                                                                                                                                                                      # see also backend key
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDIXZlEz8O1pPZXlbBoeHscQCWl6twmXarVyJnF7Ye+4bQOJS1Q/9EHKGDf2O80RqMAMxSAgDvg4DeVpEHuhKxqkpKEh7dxKu9xI0GMAESnxxaHsVpGYnT7Hb/EXn6aMFUXlttiNP/WeUmk0jbvdRWsRKXbK0RjVuatIqeoILXLmCAZ4ybaxz8423C7aSYEblpjbQ4mUJyt2cjUyNgD1LcZxFkiyyqUM39ymrYg2aMgblnVO5DMdHFN2zrKL+sW7WkyiSLbSzpRSBJMj/PP6e3zpmsK/GCnJ5TTBmoOaeD1/n45Ioz0+l9SBPOLVDJJ5WLywBmjwD1NCDbZS2RmApIczqG2HHmsAG9F6hcnEwdlKbctOA1i0Pxc3ohkdrwjltthntbJfUAIRLdecRTWKwJRcXW3RB/vAjB/d+VSrUdk9CpvlnvU82DwghzPgcBO2+9YI1riXT4DxOHd25hRjR5+DdgY7nI+nNjjd/XjgQJ3iTKpNrxKLH0rtGzq5jhjzJIBIeq92SH6OV3ySDBP+btCwzjNQHin/4qq8NOHFblw81eMtlRNon5AxA7q//xD6pClwGzfDirUGrUSnkeQ2/SMxLYll5VXGmhuWMDF9k6rMc+mILZdMhNgRdfqyPTzZ4f1pf+qI6lwWvyzY+DVn0HbGAOWOyTwd7uqhrBV2mWjyQ== conner@o1labs.com"
 }
 
@@ -16,6 +16,34 @@ terraform {
 provider "aws" {
   region = "us-west-2"
 }
+
+output "elasticsearch-endpoint" {
+  value = "${module.elasticsearch.endpoint}"
+}
+
+output "kibana-endpoint" {
+  value = "${module.elasticsearch.kibana_endpoint}"
+}
+
+######################################################################
+# Elastic Search
+module "elasticsearch" {
+  source                         = "../modules/elasticsearch"
+  domain_name                    = "coda-net"
+  domain_prefix = "testnet-20190601-"
+  management_public_ip_addresses = compact(concat(
+    ["148.64.99.117"], 
+    module.us-west-2-seed.public_ip, 
+    module.us-west-2-snarker.public_ip, 
+    module.us-west-1-proposer.public_ip, 
+#    module.us-west-2-proposer.public_ip
+  ))
+  instance_count                 = 1
+  instance_type                  = "m4.2xlarge.elasticsearch"
+  es_zone_awareness              = false
+  ebs_volume_size                = 40
+}
+
 
 ######################################################################
 # instances
@@ -35,7 +63,7 @@ module "us-west-2-seed" {
 module "us-west-2-snarker" {
   source        = "../modules/coda-node"
   region        = "us-west-2"
-  server_count  = 3
+  server_count  = 1
   instance_type = "c5.4xlarge"
   netname       = "${local.netname}"
   rolename      = "snarker"
@@ -55,15 +83,15 @@ module "us-west-1-proposer" {
   public_key    = "${local.public_key}"
 }
 
-module "us-west-2-proposer" {
-  source        = "../modules/coda-node"
-  region        = "us-west-2"
-  server_count  = 5
-  instance_type = "c5.2xlarge"
-  netname       = "${local.netname}"
-  rolename      = "proposer"
-  public_key    = "${local.public_key}"
-}
+# module "us-west-2-proposer" {
+#   source        = "../modules/coda-node"
+#   region        = "us-west-2"
+#   server_count  = 5
+#   instance_type = "c5.2xlarge"
+#   netname       = "${local.netname}"
+#   rolename      = "proposer"
+#   public_key    = "${local.public_key}"
+# }
 
 # module "us-east-1-proposer" {
 #   source        = "../modules/coda-node"
