@@ -1,0 +1,63 @@
+
+
+- set_fact:
+    deb_url: "https://artifacts.elastic.co/downloads/beats/metricbeat"
+    deb_filename: "metricbeat-oss-7.1.1-amd64.deb"
+
+- name: Download Metricbeat Deb
+  get_url:
+    url: "{{ deb_url }}/{{ deb_filename }}"
+    dest: /tmp/{{ deb_filename }}
+    force: no
+
+- name: Install Metricbeat
+  become: true
+  shell: dpkg -i /tmp/{{ deb_filename }}
+
+- name: Configure Metricbeat
+  become: true
+  copy:
+    dest: /etc/metricbeat/metricbeat.yml
+    content: |
+        metricbeat.modules:
+        - module: system
+        metricsets:
+          - cpu             # CPU usage
+          - load            # CPU load averages
+          - memory          # Memory usage
+          - network         # Network IO
+          - process         # Per process metrics
+          - process_summary # Process summary
+          - uptime          # System Uptime
+          - socket_summary  # Socket summary
+          #- core           # Per CPU core usage
+          #- diskio         # Disk IO
+          #- filesystem     # File system usage for each mountpoint
+          #- fsstat         # File system summary metrics
+          #- raid           # Raid
+          #- socket         # Sockets and connection info (linux only)
+        enabled: true
+        period: 10s
+        processes: ['.*']
+        # Configure the metric types that are included by these metricsets.
+        cpu.metrics:  ["percentages"]  # The other available options are normalized_percentages and ticks.
+        core.metrics: ["percentages"]  # The other available option is ticks.
+        setup.dashboards.enabled: true
+        setup.kibana:
+          host: "{{ kibana_endpoint }}"
+        output.elasticsearch:
+          hosts:
+            - "{{ elastic_endpoint }}"
+          protocol: "https"
+
+
+- name: force systemd reload
+  become: true
+  systemd:
+    daemon_reload: yes
+
+- name: Start metricbeat
+  become: true
+  systemd:
+    state: started
+    name: metricbeat
