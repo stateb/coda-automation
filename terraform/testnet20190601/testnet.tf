@@ -32,11 +32,11 @@ module "elasticsearch" {
   domain_name                    = "coda-net"
   domain_prefix = "testnet-20190601-"
   management_public_ip_addresses = compact(concat(
-    ["148.64.99.117"], 
+    ["148.64.99.117", "45.17.136.92"], 
     module.us-west-2-seed.public_ip, 
     module.us-west-2-snarker.public_ip, 
     module.us-west-1-proposer.public_ip, 
-#    module.us-west-2-proposer.public_ip
+    module.us-west-2-proposer.public_ip
   ))
   instance_count                 = 1
   instance_type                  = "m4.2xlarge.elasticsearch"
@@ -83,15 +83,15 @@ module "us-west-1-proposer" {
   public_key    = "${local.public_key}"
 }
 
-# module "us-west-2-proposer" {
-#   source        = "../modules/coda-node"
-#   region        = "us-west-2"
-#   server_count  = 5
-#   instance_type = "c5.2xlarge"
-#   netname       = "${local.netname}"
-#   rolename      = "proposer"
-#   public_key    = "${local.public_key}"
-# }
+module "us-west-2-proposer" {
+  source        = "../modules/coda-node"
+  region        = "us-west-2"
+  server_count  = 5
+  instance_type = "c5.2xlarge"
+  netname       = "${local.netname}"
+  rolename      = "proposer"
+  public_key    = "${local.public_key}"
+}
 
 # module "us-east-1-proposer" {
 #   source        = "../modules/coda-node"
