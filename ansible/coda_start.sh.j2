@@ -83,7 +83,7 @@ case $CODA_ROLE in
     sleep 10 # wait for daemon to come up
     export OMP_NUM_THREADS=8
     while [ "$(pgrep  -f 'coda internal snark-worker' | wc -l)" -lt "$CORE_SCALE" ]; do
-        /home/admin/testing/snark-worker.sh
+        /home/admin/scripts/snark-worker.sh
         sleep 5 # wait for it to come up
     done
     ;;
@@ -92,7 +92,7 @@ case $CODA_ROLE in
     sleep 10 # wait for daemon to come up
     export OMP_NUM_THREADS=8
     while [ "$(pgrep  -f 'coda internal snark-worker' | wc -l)" -lt "$CORE_SCALE" ]; do
-        nice /home/admin/testing/snark-worker.sh {{ hostvars[groups['snarkers'][0]].ansible_ec2_public_ipv4 }}:8301
+        nice /home/admin/scripts/snark-worker.sh {{ hostvars[groups['snarkers'][0]].ansible_ec2_public_ipv4 }}:8301
         sleep 5 # wait for it to come up
     done
     ;;
