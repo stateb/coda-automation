@@ -41,13 +41,16 @@ def print_summary(results):
         if len(result.stdout) > 0:
             data = json.loads(result.stdout)
             for key in data:
-                if key == 'propose_pubkey': continue
+                if key == 'propose_pubkeys': continue
                 if key == 'conf_dir': continue
-                summary[key].update([data[key]])
+                try:
+                    summary[key].update([data[key]])
+                except:
+                    print('Error working with', key, data[key])
     for key, counts in summary.items():
-        print(key)
+        print("\t",key)
         for item, count in counts.items():
-             print("\t", count, "@", item)
+             print("\t\t", count, "@", item)
 
 def tar_logs(group):
     cmd = 'tar -zcvf runlog.tar.gz test-*'
