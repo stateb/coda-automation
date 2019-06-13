@@ -26,14 +26,22 @@ output "kibana-endpoint" {
   value = "${module.elasticsearch.kibana_endpoint}"
 }
 
+
+######################################################################
+#   Additional IP Addresses to whitelist are being 
+#   retrieved from AWS Secrets Manager, if they are not
+#   present in your AWS Account, terraform will fail with: 
+#   "Secrets Manager Secret "testent/elasticsearch/whitelist_ips" not found"
+#
+# Console Link: https://us-west-2.console.aws.amazon.com/secretsmanager/home
+#
 data "aws_secretsmanager_secret" "elasticsearch_additional_ips" {
-  name = "testent/elasticsearch/whitelist_ips"
+  name = "testent/elasticsearch/whitelist"
 }
 
 data "aws_secretsmanager_secret_version" "selected" {
   secret_id = data.aws_secretsmanager_secret.elasticsearch_additional_ips.id
 }
-
 
 #####################################################################
 # Elastic Search
