@@ -1,10 +1,5 @@
-
-provider "aws" {
-  region = "${var.region}"
-}
-
-resource "aws_security_group" "codasg" {
-  name        = "${var.netname}_codasg"
+resource "aws_security_group" "coda_sg" {
+  name        = "${var.region}_${var.rolename}_coda_sg"
   description = "Allow control access and coda ports open"
 
   ingress {
@@ -55,11 +50,7 @@ resource "aws_security_group" "codasg" {
     self        = true
   }
 
-  tags {
-    Name = "${var.netname}_codasg"
+  tags = {
+    Name = "${var.netname}_coda_sg"
   }
-}
-
-output "security_group" {
-  value       = "${aws_security_group.codasg.name}"
 }
