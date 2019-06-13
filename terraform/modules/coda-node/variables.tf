@@ -35,9 +35,14 @@ variable "port_ql" {
 }
 
 variable "public_key" {
-  description = "An SSH Public Key used to configure node access"
+  description = "An SSH Public Key used to configure node access, if not set defaults to key_name"
   type        = "string"
   default     = ""
+}
+
+variable "key_name" {
+  description = "The name of an AWS Public Key"
+  type        = "string"
 }
 
 variable "region" {

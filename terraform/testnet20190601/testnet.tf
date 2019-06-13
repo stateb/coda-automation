@@ -1,9 +1,10 @@
 locals {
   netname    = "20190601"                                                                                                                                                                                                                                                                                                                                                                                      # see also backend key
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDIXZlEz8O1pPZXlbBoeHscQCWl6twmXarVyJnF7Ye+4bQOJS1Q/9EHKGDf2O80RqMAMxSAgDvg4DeVpEHuhKxqkpKEh7dxKu9xI0GMAESnxxaHsVpGYnT7Hb/EXn6aMFUXlttiNP/WeUmk0jbvdRWsRKXbK0RjVuatIqeoILXLmCAZ4ybaxz8423C7aSYEblpjbQ4mUJyt2cjUyNgD1LcZxFkiyyqUM39ymrYg2aMgblnVO5DMdHFN2zrKL+sW7WkyiSLbSzpRSBJMj/PP6e3zpmsK/GCnJ5TTBmoOaeD1/n45Ioz0+l9SBPOLVDJJ5WLywBmjwD1NCDbZS2RmApIczqG2HHmsAG9F6hcnEwdlKbctOA1i0Pxc3ohkdrwjltthntbJfUAIRLdecRTWKwJRcXW3RB/vAjB/d+VSrUdk9CpvlnvU82DwghzPgcBO2+9YI1riXT4DxOHd25hRjR5+DdgY7nI+nNjjd/XjgQJ3iTKpNrxKLH0rtGzq5jhjzJIBIeq92SH6OV3ySDBP+btCwzjNQHin/4qq8NOHFblw81eMtlRNon5AxA7q//xD6pClwGzfDirUGrUSnkeQ2/SMxLYll5VXGmhuWMDF9k6rMc+mILZdMhNgRdfqyPTzZ4f1pf+qI6lwWvyzY+DVn0HbGAOWOyTwd7uqhrBV2mWjyQ== conner@o1labs.com"
+  aws_key_name = "testnet"
 }
 
 terraform {
+  required_version = "~> 0.12.0"
   backend "s3" {
     key     = "test-net/terraform.tfstate"
     encrypt = true
@@ -25,18 +26,27 @@ output "kibana-endpoint" {
   value = "${module.elasticsearch.kibana_endpoint}"
 }
 
-######################################################################
+data "aws_secretsmanager_secret" "elasticsearch_additional_ips" {
+  name = "testent/elasticsearch/whitelist_ips"
+}
+
+data "aws_secretsmanager_secret_version" "selected" {
+  secret_id = data.aws_secretsmanager_secret.elasticsearch_additional_ips.id
+}
+
+
+#####################################################################
 # Elastic Search
 module "elasticsearch" {
   source                         = "../modules/elasticsearch"
   domain_name                    = "coda-net"
   domain_prefix = "testnet-20190601-"
   management_public_ip_addresses = compact(concat(
-    ["148.64.99.117", "45.17.136.92"], 
+    jsondecode(data.aws_secretsmanager_secret_version.selected.secret_string)["elasticsearch_whitelist_ips"],
     module.us-west-2-seed.public_ip, 
     module.us-west-2-snarker.public_ip, 
     module.us-west-1-proposer.public_ip, 
-    module.us-west-2-proposer.public_ip
+#    module.us-west-2-proposer.public_ip
   ))
   instance_count                 = 1
   instance_type                  = "m4.2xlarge.elasticsearch"
@@ -56,7 +66,7 @@ module "us-west-2-seed" {
   instance_type = "c5.xlarge"
   netname       = "${local.netname}"
   rolename      = "seed"
-  public_key    = "${local.public_key}"
+  key_name    = "${local.aws_key_name}"
 }
 
 ## Snarkers
@@ -67,7 +77,7 @@ module "us-west-2-snarker" {
   instance_type = "c5.4xlarge"
   netname       = "${local.netname}"
   rolename      = "snarker"
-  public_key    = "${local.public_key}"
+  key_name    = "${local.aws_key_name}"
 }
 
 ######################################################################
@@ -80,18 +90,18 @@ module "us-west-1-proposer" {
   instance_type = "c5.2xlarge"
   netname       = "${local.netname}"
   rolename      = "proposer"
-  public_key    = "${local.public_key}"
+  key_name    = "${local.aws_key_name}"
 }
 
-module "us-west-2-proposer" {
-  source        = "../modules/coda-node"
-  region        = "us-west-2"
-  server_count  = 5
-  instance_type = "c5.2xlarge"
-  netname       = "${local.netname}"
-  rolename      = "proposer"
-  public_key    = "${local.public_key}"
-}
+# module "us-west-2-proposer" {
+#   source        = "../modules/coda-node"
+#   region        = "us-west-2"
+#   server_count  = 5
+#   instance_type = "c5.2xlarge"
+#   netname       = "${local.netname}"
+#   rolename      = "proposer"
+#   public_key    = "${local.public_key}"
+# }
 
 # module "us-east-1-proposer" {
 #   source        = "../modules/coda-node"
