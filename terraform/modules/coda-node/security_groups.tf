@@ -51,6 +51,6 @@ resource "aws_security_group" "coda_sg" {
   }
 
   tags = {
-    Name = "${var.netname}_coda_sg"
+    TestNet = "${var.netname}"
   }
 }

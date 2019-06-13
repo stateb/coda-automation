@@ -43,6 +43,7 @@ variable "public_key" {
 variable "key_name" {
   description = "The name of an AWS Public Key"
   type        = "string"
+  default = ""
 }
 
 variable "region" {
