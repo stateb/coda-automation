@@ -71,7 +71,7 @@ provider "aws" {
 
 ## Seeds
 module "us-west-2-seed" {
-  source        = "../modules/coda-node"
+  source        = "../../modules/coda-node"
   region        = "us-west-2"
   server_count  = 1
   instance_type = "c5.xlarge"
@@ -82,7 +82,7 @@ module "us-west-2-seed" {
 
 ## Joiners
 module "us-west-2-joiner" {
-  source        = "../modules/coda-node"
+  source        = "../../modules/coda-node"
   region        = "us-west-2"
   server_count  = 1
   instance_type = "c5.xlarge"
@@ -93,7 +93,7 @@ module "us-west-2-joiner" {
 
 ## Snarkers
 module "us-west-2-snarker" {
-  source        = "../modules/coda-node"
+  source        = "../../modules/coda-node"
   region        = "us-west-2"
   server_count  = 1
   instance_type = "c5.4xlarge"
@@ -106,7 +106,7 @@ module "us-west-2-snarker" {
 ## Proposers
 
 module "us-west-1-proposer" {
-  source        = "../modules/coda-node"
+  source        = "../../modules/coda-node"
   region        = "us-west-1"
   server_count  = 1
   instance_type = "c5.2xlarge"
@@ -116,7 +116,7 @@ module "us-west-1-proposer" {
 }
 
 module "us-west-2-proposer" {
-  source        = "../modules/coda-node"
+  source        = "../../modules/coda-node"
   region        = "us-west-2"
   server_count  = 1
   instance_type = "c5.2xlarge"
@@ -126,7 +126,7 @@ module "us-west-2-proposer" {
 }
 
 module "us-east-1-proposer" {
-  source        = "../modules/coda-node"
+  source        = "../../modules/coda-node"
   region        = "us-east-1"
   server_count  = 1
   instance_type = "c5.2xlarge"
@@ -136,7 +136,7 @@ module "us-east-1-proposer" {
 }
 
 module "us-east-2-proposer" {
-  source        = "../modules/coda-node"
+  source        = "../../modules/coda-node"
   region        = "us-east-2"
   server_count  = 1
   instance_type = "c5.2xlarge"
@@ -146,7 +146,7 @@ module "us-east-2-proposer" {
 }
 
 module "eu-west-1-proposer" {
-  source        = "../modules/coda-node"
+  source        = "../../modules/coda-node"
   region        = "eu-west-1"
   server_count  = 1
   instance_type = "c5.2xlarge"

@@ -30,5 +30,5 @@ fi
 ansible-playbook \
     --vault-password-file=ansible_vault_password \
     -i ec2.py \
-    -l tag_testnet_${TESTNET} \
+    -e netname=${TESTNET} \
     ${playbook}

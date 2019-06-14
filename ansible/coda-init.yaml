@@ -1,9 +1,5 @@
 ---
 - hosts: "tag_testnet_{{ netname }}"
-  #vars:
-    #proving_key_url: "{{ lookup('aws_secret', 'testnet/proving/s3_url') }}"
-    #elasticsearch_endpoint: "{{ lookup('aws_secret', 'testnet/' + netname + '/elasticsearch/endpoint') }}"
-    #kibana_endpoint:
   strategy: free
   gather_facts: no
   tasks:

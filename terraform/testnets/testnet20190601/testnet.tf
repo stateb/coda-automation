@@ -6,7 +6,7 @@ locals {
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "test-net/terraform.tfstate"
+    key     = "test-net/terraform-20190601.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
