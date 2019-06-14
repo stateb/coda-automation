@@ -31,7 +31,7 @@
 
         output.elasticsearch:
           hosts:
-            - "{{ elastic_endpoint }}"
+            - "{{ elasticsearch_endpoint }}"
           protocol: "https"
 
 

@@ -1,5 +1,5 @@
 - name: Download PV Keys
   get_url:
-    url: "{{ s3_key_bucket }}/keys-temporary_hack-testnet_postake.tar.bz2"
+    url: "{{ proving_url }}/keys-temporary_hack-testnet_postake.tar.bz2"
     dest: /tmp/keys-temporary_hack-testnet_postake.tar.bz2
     force: no
