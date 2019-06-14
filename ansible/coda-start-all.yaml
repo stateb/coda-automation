@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: "tag_testnet_{{ netname }}"
   gather_facts: no
   tasks:
     - ec2_metadata_facts:
@@ -12,7 +12,7 @@
     - pause:
         seconds: 5
 
-- hosts: tag_role_seed
+- hosts: "tag_{{ netname }}_role_seed"
   gather_facts: no
   tasks:
     - name: Start Coda
@@ -22,7 +22,7 @@
     - pause:
         seconds: 5
 
-- hosts: tag_role_snarker
+- hosts: "tag_{{ netname }}_role_snarker"
   gather_facts: no
   tasks:
     - name: Start Coda
@@ -32,7 +32,7 @@
     - pause:
         seconds: 5
 
-- hosts: tag_role_proposer
+- hosts: "tag_{{ netname }}_role_proposer"
   gather_facts: no
   tasks:
     - name: Start Coda

@@ -25,13 +25,13 @@ resource "aws_instance" "coda_node" {
   ami                         = "${data.aws_ami.image.id}"
   instance_type               = "${var.instance_type}"
   security_groups             = ["${aws_security_group.coda_sg.name}"]
-  key_name                    = "${var.public_key == "" ? aws_key_pair.testnet[0].key_name : var.key_name}"
+  key_name                    = "${var.public_key != "" ? aws_key_pair.testnet[0].key_name : var.key_name}"
   availability_zone           = "${element(data.aws_availability_zones.azs.names, count.index)}"
   associate_public_ip_address = "${var.use_eip}"
 
   tags = {
     Name = "${var.netname}_${var.region}_${var.rolename}_${count.index}"
-    role = "${var.rolename}"
+    role = "${var.netname}_${var.rolename}"
     testnet = "${var.netname}"
   }
 
@@ -65,7 +65,7 @@ pip3 install sexpdata psutil
 
 resource "aws_key_pair" "testnet" {
   count = "${var.public_key != "" ? 1 : 0}"
-  key_name   = "${var.region}_${var.rolename}_keypair"
+  key_name   = "${var.netname}_${var.region}_${var.rolename}_keypair"
   public_key = "${var.public_key}"
 }
 
