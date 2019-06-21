@@ -31,7 +31,7 @@
 
         output.elasticsearch:
           hosts:
-            - "{{ elasticsearch_endpoint }}"
+            - "{{ elastic_url }}"
           protocol: "https"
 
 
@@ -43,5 +43,5 @@
 - name: Start filebeat
   become: true
   systemd:
-    state: started
+    state: restarted
     name: filebeat
