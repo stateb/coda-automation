@@ -53,6 +53,9 @@ case $CODA_ROLE in
 "proposer")
     CLI_ROLE="-peer ${CODA_SEED} "
     CLI_ROLE+=" -propose-key /home/admin/testkeys/high${CODA_PROPOSER_ORDER} "
+    # Note: Following flag strips the propose key of its password and 
+    # imports it into the Daemon's internal wallet store.
+    CLI_ROLE+=" -unsafe-track-propose-key"
     ;;
 "snarker")
     CLI_ROLE="-peer ${CODA_SEED} "
