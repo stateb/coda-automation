@@ -1,7 +1,4 @@
-
-
-
-- name: Store Testnet Stats
+- name: Store Testnet Config
   become: true
   copy:
     dest: /etc/testnet_config.json

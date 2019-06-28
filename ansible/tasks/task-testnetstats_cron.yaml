@@ -1,0 +1,8 @@
+# Cronjob for reporting stats
+- name: Cron testnetstats
+  become: true
+  copy:
+    dest: /etc/cron.d/testnetstats
+    content: |
+        PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+        * * * * * admin /home/admin/scripts/testnetstats.py 2> /tmp/testnetstats.last.log.err 1> /tmp/testnetstats.last.log

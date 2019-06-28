@@ -9,3 +9,7 @@
 - name: Install geoipupdate
   apt: deb="/tmp/geoipupdate_4.0.3_linux_amd64.deb"
   sudo: true
+
+- name: Run geoipupdate
+  command: geoipupdate
+  become: true
