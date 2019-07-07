@@ -10,7 +10,7 @@ If you have any issues setting up your testnet or have any other questions about
 coda-automation
 ├── ansible
 │   ├── tasks
-│   └── testkeys
+│   └── wallet-keys
 ├── scripts
 └── terraform
     ├── modules

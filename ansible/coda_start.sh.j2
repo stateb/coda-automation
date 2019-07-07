@@ -53,7 +53,7 @@ CORE_SCALE=$(( $CORE_COUNT / 8 ))
 case $CODA_ROLE in
 "proposer")
     CLI_ROLE="-peer ${CODA_SEED} "
-    CLI_ROLE+=" -propose-key /home/admin/testkeys/high${CODA_PROPOSER_ORDER} "
+    CLI_ROLE+=" -propose-key /home/admin/wallet-keys/${CODA_PROPOSER_ORDER} "
     # Note: Following flag strips the propose key of its password and
     # imports it into the Daemon's internal wallet store.
     CLI_ROLE+=" -unsafe-track-propose-key"
@@ -114,7 +114,7 @@ case $CODA_ROLE in
     sleep 10 # wait for daemon to come up
     export OMP_NUM_THREADS=8
     while [ "$(pgrep  -f 'coda internal snark-worker' | wc -l)" -lt "$CORE_SCALE" ]; do
-        nice start_worker {{ snark_leader_ip }}:8301
+        start_worker {{ snark_leader_ip }}:8301
         sleep 5 # wait for it to come up
     done
     ;;

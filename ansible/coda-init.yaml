@@ -13,7 +13,7 @@
     - include: tasks/task-pvdownload.yaml
     - include: tasks/task-pvextract.yaml
     - include: tasks/task-installcoda.yaml
-    - include: tasks/task-testkeys.yaml
+    - include: tasks/task-wallet-keys.yaml
     - include: tasks/task-sshkeys.yaml
     - include: tasks/task-tools.yaml
     - include: tasks/task-install-filebeat.yaml
@@ -28,5 +28,5 @@
     - name: Unique ID
       copy:
         dest: /etc/coda-proposer_order
-        content: "{{ ansible_play_hosts.index(inventory_hostname) }}"
+        content: "{{ ansible_play_hosts.index(inventory_hostname) + 1 }}"
       become: true
