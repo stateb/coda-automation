@@ -28,5 +28,5 @@
     - name: Unique ID
       copy:
         dest: /etc/coda-proposer_order
-        content: "{{ ansible_play_hosts.index(inventory_hostname) + 1 }}"
+        content: "{{ ansible_play_hosts.index(inventory_hostname) }}"
       become: true

@@ -1,5 +1,5 @@
 - name: Download PV Keys
   get_url:
-    url: "{{ proving_url }}/keys-temporary_hack-testnet_postake.tar.bz2"
-    dest: /tmp/keys-temporary_hack-testnet_postake.tar.bz2
+    url: "{{ proving_url }}/coda_cache_dir_7d5ab7b9_.tar.bz2"
+    dest: /tmp/coda_cache_dir_7d5ab7b9_.tar.bz2
     force: no

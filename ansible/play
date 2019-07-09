@@ -31,4 +31,5 @@ ansible-playbook \
     --vault-password-file=ansible_vault_password \
     -i ec2.py \
     -e netname=${TESTNET} \
+    -e start_time=$(date +%s) \
     ${playbook}

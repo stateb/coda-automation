@@ -30,6 +30,9 @@ PUBLIC_KEY='8QnLTHMZPbBFezS8j8kDPu6iLiwPsTPyX2vMwcFzjiDZbp6GQDEBEyLbYvzApSdTsE'
 
 CODA_PRIVKEY_PASS=testnet
 
+# This is important 
+export CODA_TIME_OFFSET=$(echo "{{ testnet_timestamp }} - $(date --date="2019-01-30 12:00:00-08:00" +%s)" | bc)
+
 CODA_SEED="{{ seed_ip }}:${CODA_PEERPORT}" # derived from ansible
 CODA_ROLE=$(cat /etc/coda-rolename)
 
@@ -39,7 +42,7 @@ else
     CODA_PROPOSER_ORDER='0'
 fi
 
-CLI_COMMON="-background -tracing "
+CLI_COMMON="-background -tracing -log-json -log-level Trace "
 CLI_COMMON+="-client-port ${CODA_CLIENTPORT} " # Default
 CLI_COMMON+="-external-port ${CODA_EXTPORT} "
 CLI_COMMON+="-config-directory /home/admin/test-coda "
