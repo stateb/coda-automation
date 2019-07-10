@@ -7,7 +7,7 @@
 - name: install package
   become: true
   apt:
-    name: coda-testnet-postake-medium-curves=0.0.1-release-beta-7a06f2b9
+    name: coda-testnet-postake-medium-curves=0.0.1-fix-turn-on-time-offset-medium-curves-0800e98f
     state: present # present for downgrades
     force: yes
     update_cache: yes

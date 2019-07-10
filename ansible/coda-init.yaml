@@ -9,13 +9,10 @@
   strategy: free
   gather_facts: no
   tasks:
-    - include: tasks/task-varlibcoda.yaml
-    - include: tasks/task-pvdownload.yaml
-    - include: tasks/task-pvextract.yaml
-    - include: tasks/task-installcoda.yaml
     - include: tasks/task-wallet-keys.yaml
     - include: tasks/task-sshkeys.yaml
     - include: tasks/task-tools.yaml
+    - include: tasks/task-installcoda.yaml
     - include: tasks/task-install-filebeat.yaml
     - include: tasks/task-install-metricbeat.yaml
     - include: tasks/task-testnet_config.yaml

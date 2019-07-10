@@ -1,6 +1,6 @@
 ---
 - hosts: "tag_testnet_{{ netname }}"
-  #gather_facts: no
+  gather_facts: no
   tasks:
     - ec2_metadata_facts:
     - name: Generating coda_start.sh

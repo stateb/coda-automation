@@ -1,5 +1,0 @@
-- name: Download PV Keys
-  get_url:
-    url: "{{ proving_url }}/coda_cache_dir_7d5ab7b9_.tar.bz2"
-    dest: /tmp/coda_cache_dir_7d5ab7b9_.tar.bz2
-    force: no

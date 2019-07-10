@@ -1,9 +1,0 @@
-
-- name: Extract PV Keys 1
-  unarchive:
-    creates: /var/lib/coda/7af380d60d047e0d63117b43d20ab394_proving
-    src: /tmp/coda_cache_dir_7d5ab7b9_.tar.bz2
-    dest: /var/lib/coda
-    remote_src: yes
-    extra_opts:
-      - --strip-components=2
