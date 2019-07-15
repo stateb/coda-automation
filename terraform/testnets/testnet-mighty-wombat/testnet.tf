@@ -1,12 +1,12 @@
 locals {
-  netname    = "beautiful-unicorn"
+  netname    = "mighty-wombat"
   aws_key_name = "testnet"
 }
 
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "test-net/terraform-beautiful-unicorn.tfstate"
+    key     = "test-net/terraform-mighty-wombat.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
@@ -27,6 +27,7 @@ module "us-west-2-seed" {
   netname       = "${local.netname}"
   rolename      = "seed"
   key_name      = "${local.aws_key_name}"
+  public_key = ""
 }
 
 ## Seed Hostname
@@ -52,6 +53,7 @@ module "us-west-2-snarker" {
   netname       = "${local.netname}"
   rolename      = "snarker"
   key_name      = "${local.aws_key_name}"
+  public_key = ""
 }
 
 ######################################################################
@@ -60,10 +62,11 @@ module "us-west-2-snarker" {
 module "us-west-2-proposer" {
   source        = "../../modules/coda-node"
   region        = "us-west-2"
-  server_count  = 3
+  server_count  = 4
   instance_type = "c5.2xlarge"
   netname       = "${local.netname}"
   rolename      = "proposer"
   key_name      = "${local.aws_key_name}"
+  public_key = ""
 }
 

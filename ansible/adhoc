@@ -1,0 +1,12 @@
+#!/bin/bash
+set -x 
+
+GROUP=$1
+COMMAND=$2
+
+ansible \
+    ${GROUP} \
+    -i ec2.py \
+    -m shell \
+    -a "$COMMAND" \
+    -u admin

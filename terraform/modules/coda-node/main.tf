@@ -43,9 +43,14 @@ resource "aws_instance" "coda_node" {
   # Role Specific Magic Happens Here
   user_data = <<-EOF
 #!/bin/bash
-echo "Setting hostname"
+echo "Setting Hostname"
 hostnamectl set-hostname ${var.netname}_${var.region}_${var.rolename}_${count.index}.${var.region}
 echo '127.0.1.1  ${var.netname}_${var.region}_${var.rolename}_${count.index}.${var.region}' >> /etc/hosts
+
+echo "Installing Coda"
+echo "deb [trusted=yes] http://packages.o1test.net unstable main" > /etc/apt/sources.list.d/coda.list
+apt-get update
+apt-get install --force-yes -t unstable coda-testnet-postake-medium-curves=${var.coda_version} -y
 
 # coda flags
 echo ${var.rolename} > /etc/coda-rolename
@@ -64,7 +69,8 @@ apt-get --yes install \
   ncdu \
   rsync \
   tmux \
-  ttyload
+  ttyload \
+  software-properties-common
 
 # dev tools
 apt-get --yes install python3-pip
