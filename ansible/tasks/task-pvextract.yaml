@@ -1,9 +1,0 @@
-
-- name: Extract PV Keys 1
-  unarchive:
-    creates: /var/lib/coda/e5fe154841edd2623009c7ad998cbab7_proving
-    src: /tmp/keys-temporary_hack-testnet_postake.tar.bz2
-    dest: /var/lib/coda
-    remote_src: yes
-    extra_opts:
-      - --strip-components=2

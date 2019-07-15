@@ -1,12 +1,12 @@
 locals {
-  netname    = "20190702"
+  netname    = "mighty-wombat"
   aws_key_name = "testnet"
 }
 
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "test-net/terraform-20190702.tfstate"
+    key     = "test-net/terraform-mighty-wombat.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
@@ -27,6 +27,21 @@ module "us-west-2-seed" {
   netname       = "${local.netname}"
   rolename      = "seed"
   key_name      = "${local.aws_key_name}"
+  public_key = ""
+}
+
+## Seed Hostname
+
+data "aws_route53_zone" "selected" {
+  name         = "o1test.net."
+}
+
+resource "aws_route53_record" "netname" {
+  zone_id = "${data.aws_route53_zone.selected.zone_id}"
+  name    = "${local.netname}.${data.aws_route53_zone.selected.name}"
+  type    = "A"
+  ttl     = "300"
+  records = module.us-west-2-seed.public_ip
 }
 
 ## Snarkers
@@ -38,28 +53,20 @@ module "us-west-2-snarker" {
   netname       = "${local.netname}"
   rolename      = "snarker"
   key_name      = "${local.aws_key_name}"
+  public_key = ""
 }
 
 ######################################################################
 ## Proposers
 
-module "us-west-1-proposer" {
-  source        = "../../modules/coda-node"
-  region        = "us-west-1"
-  server_count  = 1
-  instance_type = "c5.2xlarge"
-  netname       = "${local.netname}"
-  rolename      = "proposer"
-  key_name      = "${local.aws_key_name}"
-}
-
 module "us-west-2-proposer" {
   source        = "../../modules/coda-node"
   region        = "us-west-2"
-  server_count  = 1
+  server_count  = 4
   instance_type = "c5.2xlarge"
   netname       = "${local.netname}"
   rolename      = "proposer"
   key_name      = "${local.aws_key_name}"
+  public_key = ""
 }
 

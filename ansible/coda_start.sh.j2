@@ -26,9 +26,12 @@ CODA_RPCPORT=8301
 CODA_EXTPORT=$(($CODA_RPCPORT + 1))
 CODA_PEERPORT=$(($CODA_RPCPORT + 2))
 CODA_QLPORT=$(($CODA_RPCPORT + 3))
-PUBLIC_KEY='8QnLTHMZPbBFezS8j8kDPu6iLiwPsTPyX2vMwcFzjiDZbp6GQDEBEyLbYvzApSdTsE'
+PUBLIC_KEY='tNci9ERxHGkemqBmNxEWTcPgY5sn347yq6BFcUGTpve6aJpaDUgaaTEQ3rfAgYeK7KhzEbYoJvSbqQ8u88aBNtu8ALVcEeRo4ei6sGjxMsmBAJW7vwW57KLzrvou4YEMA3saq6Xqtpg3sb'
 
 CODA_PRIVKEY_PASS=testnet
+
+# This is important 
+export CODA_TIME_OFFSET=$(echo "{{ testnet_timestamp }} - $(date --date="2019-01-30 12:00:00-08:00" +%s)" | bc)
 
 CODA_SEED="{{ seed_ip }}:${CODA_PEERPORT}" # derived from ansible
 CODA_ROLE=$(cat /etc/coda-rolename)
@@ -39,7 +42,7 @@ else
     CODA_PROPOSER_ORDER='0'
 fi
 
-CLI_COMMON="-background -tracing "
+CLI_COMMON="-background -tracing -log-json -log-level Trace "
 CLI_COMMON+="-client-port ${CODA_CLIENTPORT} " # Default
 CLI_COMMON+="-external-port ${CODA_EXTPORT} "
 CLI_COMMON+="-config-directory /home/admin/test-coda "
