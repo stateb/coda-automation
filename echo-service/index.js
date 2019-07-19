@@ -134,7 +134,7 @@ const handleBlock = ({ data }, publicKey) => {
 
   Promise.all(
     transactions.userCommands
-      .filter(txn => txn.to === publicKey)
+      .filter(txn => txn.to === publicKey && txn.amount > FEE)
       .map(reverseTransaction)
   )
     .then(() => console.log(`Successfully processed block ${stateHash}`))
