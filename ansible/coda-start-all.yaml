@@ -20,8 +20,10 @@
       shell: /home/admin/coda_start.sh
       args:
         executable: /bin/bash
+      register: seed_start
+    - debug: msg="{{ seed_start.stdout }}"
     - pause:
-        seconds: 5
+        seconds: 30
 
 - hosts: "tag_role_{{ netname }}_snarker"
   gather_facts: no
@@ -30,6 +32,8 @@
       shell: /home/admin/coda_start.sh
       args:
         executable: /bin/bash
+      register: snarker_start
+    - debug: msg="{{ snarker_start.stdout }}"
     - pause:
         seconds: 5
 
@@ -40,3 +44,5 @@
       shell: /home/admin/coda_start.sh
       args:
         executable: /bin/bash
+      register: proposer_start
+    - debug: msg="{{ proposer_start.stdout }}"
