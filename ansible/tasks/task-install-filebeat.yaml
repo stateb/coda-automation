@@ -28,6 +28,7 @@
           overwrite_keys: true
           paths:
             - /home/admin/test-*/*.log
+            - /home/admin/test-*/*.log.*
 
         output.elasticsearch:
           hosts:

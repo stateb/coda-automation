@@ -70,8 +70,8 @@ def coda_status(port=default_port+1, verbose=False):
 
 def coda_block(port=default_port+1, verbose=False):
     status = coda_status(port=port, verbose=verbose)
-    if 'block_count' in status:
-        return(status['block_count'])
+    if 'blockchain_length' in status:
+        return(status['blockchain_length'])
     else:
         print('Unable to determine current block. Sleeping %s' % (default_sleep))
         time.sleep(default_sleep)
@@ -118,7 +118,7 @@ def filtered_status(client_port=default_port+1):
     metrics['human_uptime'] = seconds_to_human(metrics['uptime_secs'])
     metrics['human_epoch'] = seconds_to_human(metrics['consensus_configuration']['epoch_duration']/1000)
     metrics['epochs_passed'] = int(( metrics['uptime_secs'] / (metrics['consensus_configuration']['epoch_duration']/1000) ))
-    metrics['seconds_per_block'] = int(metrics['uptime_secs'] / metrics['block_count'])
+    metrics['seconds_per_block'] = int(metrics['uptime_secs'] / metrics['blockchain_length'])
 
     output = {key: metrics[key] for key in metrics if key not in skip_list}
 
@@ -146,7 +146,7 @@ def cluster_status():
     for result in results:
         if len(result) < 1: continue
 
-        statkeys = ['state_hash', 'num_accounts', 'block_count']
+        statkeys = ['state_hash', 'num_accounts', 'blockchain_length']
         for stat in statkeys:
             if stat in result:
                 stats[stat][result[stat]] += 1
