@@ -112,8 +112,8 @@ Once a mod approves, `100 CODA` will be sent to the requested address!
                         # Alert in the channel that the transaction approved
                         await channel.send('Woof! -- Transaction Approved, fetching your funds...')
                         # Make call to ansible 
-                        #loop = asyncio.get_event_loop()
-                        #output = await loop.run_in_executor(executor, faucet_transaction, recipient, amount)
+                        loop = asyncio.get_event_loop()
+                        output = await loop.run_in_executor(executor, faucet_transaction, recipient, amount)
                         # Collect output and return it to the channel
                         await channel.send('{} Transaction Sent! Output from Daemon: ```{}```'.format(requester.mention, output))
                         print("Approved!")
