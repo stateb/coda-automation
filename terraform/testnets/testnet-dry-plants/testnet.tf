@@ -38,6 +38,14 @@ data "aws_route53_zone" "selected" {
   name = "o1test.net."
 }
 
+resource "aws_route53_record" "netname-hello-coda" {
+  zone_id = "${data.aws_route53_zone.selected.zone_id}"
+  name    = "hello-coda.${data.aws_route53_zone.selected.name}"
+  type    = "A"
+  ttl     = "300"
+  records = module.us-west-2-seed.public_ip
+}
+
 resource "aws_route53_record" "netname" {
   zone_id = "${data.aws_route53_zone.selected.zone_id}"
   name    = "${local.netname}.${data.aws_route53_zone.selected.name}"
