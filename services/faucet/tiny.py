@@ -32,8 +32,8 @@ async def on_message(message):
     # Help me grumpus! 
     if message.content.startswith('$help') and message.channel.name in LISTENING_CHANNELS:
         help_string = '''
-Woof! I can help you get some Coda on one of our Test Nets. 
-All you have to do is send a message in the #faucet channel with the following contents: 
+Woof! I can help you get some coda on the testnet.
+Just send me a message in the #faucet channel with the following contents: 
 
 `$request <public-key>`
 
