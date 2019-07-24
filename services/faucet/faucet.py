@@ -36,7 +36,7 @@ def faucet_transaction(recipient, amount):
     print(FAUCET_PUBLIC_KEY)
     coda = CodaClient.Client(graphql_host = DAEMON_HOST, graphql_port = DAEMON_PORT)
     response = coda.send_payment(recipient, FAUCET_PUBLIC_KEY, amount, FAUCET_FEE, memo)
-    print(response.text)
+    print(response)
     return response
 
 

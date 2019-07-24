@@ -125,6 +125,7 @@ const handleBlock = ({ data }, publicKey) => {
   const { stateHash, transactions } = data.newBlock;
 
   if (processedBlocks.includes(stateHash)) {
+    console.log(`Already processed block ${stateHash}`);
     return;
   } else {
     const cacheSize = processedBlocks.push(stateHash);
