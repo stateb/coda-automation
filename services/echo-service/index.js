@@ -116,7 +116,7 @@ const reverseTransaction = txn =>
       }
     })
     .then(({ data }) => {
-      logger.info(`💸 Sent transaction to ${data.sendPayment.to}`, txn: data.sendPayment.payment);
+      logger.info(`💸 Sent transaction to ${data.sendPayment.payment.to}`, data.sendPayment.payment);
     });
 
 const handleBlock = ({ data }, publicKey) => {
