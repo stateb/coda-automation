@@ -75,7 +75,7 @@ module "us-west-2-proposer" {
 }
 
 
-module "us-west-2-proposer" {
+module "us-west-1-proposer" {
   source        = "../../modules/coda-node"
   region        = "us-west-1"
   server_count  = 3

@@ -3,7 +3,8 @@ import re
 import os
 import asyncio
 import concurrent.futures
-from faucet import faucet_transaction
+from faucet import Faucet
+import CodaClient 
 
 LISTENING_CHANNELS = ["faucet"]
 FAUCET_APPROVE_ROLE = "faucet-approvers"
@@ -15,12 +16,29 @@ DISCORD_API_KEY = os.environ.get("DISCORD_API_KEY")
 
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
 client = discord.Client()
+faucet = Faucet()
+
+
+SENT_TRANSACTION_THIS_BLOCK = False
+
+# This is a fix for a bug in the Daemon where the Nonce is
+# only incremented once per block, can be removed once it's fixed
+# NOTE: This means we can only send one faucet transaction per block. 
+async def new_block_callback():
+    global SENT_TRANSACTION_THIS_BLOCK
+    print("Got a block! Resetting the Boolean.")
+    SENT_TRANSACTION_THIS_BLOCK = True
+
 @client.event
 async def on_ready():
+    # Call new block subscription
     print('We have logged in as {0.user}'.format(client))
+    await faucet.new_block_subscribe(new_block_callback)
 
 @client.event
 async def on_message(message):
+    global SENT_TRANSACTION_THIS_BLOCK
+
     # Dont listen to messages from me
     if message.author == client.user:
         return
@@ -67,7 +85,7 @@ Once a mod approves, `100 CODA` will be sent to the requested address!
             # Try to parse the message with regex
             regexp = "\$request (\w+)"
             m = re.search(regexp, message.content)
-            if m:
+            if m and not SENT_TRANSACTION_THIS_BLOCK:
                 recipient = m.groups()[0]
                 amount = CODA_FAUCET_AMOUNT
                 print(recipient)
@@ -101,6 +119,7 @@ Once a mod approves, `100 CODA` will be sent to the requested address!
                         task.cancel()
                     if len(unfinished) != 0:
                         await asyncio.wait(unfinished)
+                    
 
                 # Transaction was not approved
                 except asyncio.TimeoutError:
@@ -113,20 +132,26 @@ Once a mod approves, `100 CODA` will be sent to the requested address!
                         await channel.send('Woof! -- Transaction Approved, fetching your funds...')
                         # Make call to ansible 
                         loop = asyncio.get_event_loop()
-                        output = await loop.run_in_executor(executor, faucet_transaction, recipient, amount)
+                        output = await loop.run_in_executor(executor, faucet.faucet_transaction, recipient, amount)
                         # Collect output and return it to the channel
                         await channel.send('{} Transaction Sent! Output from Daemon: ```{}```'.format(requester.mention, output))
                         print("Approved!")
+                        SENT_TRANSACTION_THIS_BLOCK = True
                     elif cancel in done:
                         await channel.send('Transaction Cancelled!')
                         print("Cancelled...")
-
+            elif SENT_TRANSACTION_THIS_BLOCK: 
+                # If we get here then we have already sent a transaction this block and we should report an error
+                print("SENT TOO MANY REQUESTS THIS BLOCK, NOT SENDING!")
+                error_message = "I've sent too many transactions this block, please try again later!"
+                await message.channel.send(error_message)
             else:
                 print(message.content)
                 error_message = '''Grrrrr... Invalid Parameters!!
-                `$request <public-key> <amount>`
+                `$request <public-key>`
                 '''
                 await message.channel.send(error_message)
+            
         finally:
             del ACTIVE_REQUESTS[requester.id]
 
