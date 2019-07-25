@@ -8,6 +8,8 @@ const { WebSocketLink } = require("apollo-link-ws");
 const { InMemoryCache } = require("apollo-cache-inmemory");
 const { getMainDefinition } = require("apollo-utilities");
 
+const logger = require("./logger.js");
+
 // Set up our GraphQL client
 
 const { PORT = 0xc0da, PUBLIC_KEY, FEE = 5 } = process.env;
@@ -82,6 +84,7 @@ const sendPaymentMutation = gql`
         id
         from
         to
+        nonce
         amount
         fee
       }
@@ -113,8 +116,7 @@ const reverseTransaction = txn =>
       }
     })
     .then(({ data }) => {
-      console.log("Sent transaction");
-      console.log(data.sendPayment);
+      logger.info(`💸 Sent transaction to ${data.sendPayment.to}`, txn: data.sendPayment.payment);
     });
 
 const handleBlock = ({ data }, publicKey) => {
@@ -125,7 +127,7 @@ const handleBlock = ({ data }, publicKey) => {
   const { stateHash, transactions } = data.newBlock;
 
   if (processedBlocks.includes(stateHash)) {
-    console.log(`Already processed block ${stateHash}`);
+    logger.warn(`⚠️ Already processed block ${stateHash}`);
     return;
   } else {
     const cacheSize = processedBlocks.push(stateHash);
@@ -138,29 +140,33 @@ const handleBlock = ({ data }, publicKey) => {
       .filter(txn => txn.to === publicKey && txn.amount > FEE)
       .map(reverseTransaction)
   )
-    .then(() => console.log(`Successfully processed block ${stateHash}`))
-    .catch(console.error);
+    .then(() => logger.info(`✅ Successfully processed block ${stateHash}`))
+    .catch(logger.error);
 };
 
 const subscribeToBlocks = publicKey => {
-  console.log(`Listening for transactions sent to ${publicKey}`);
+  logger.info(`👂 Listening for transactions sent to ${publicKey}`);
   client
     .subscribe({
       query: newBlockSubscription,
       variables: { publicKey }
     })
     .forEach(block => handleBlock(block, publicKey))
-    .catch(console.error);
+    .catch(logger.error);
 };
 
 // Start listening
 
+logger.info("Starting echo service...");
+
 if (PUBLIC_KEY) {
+  logger.info("Public key provided via PUBLIC_KEY.");
   subscribeToBlocks(PUBLIC_KEY);
 } else {
+  logger.info("No public key provided, querying GraphQL...");
   client
     .query({ query: walletsQuery })
     .then(extractPublicKey)
     .then(subscribeToBlocks)
-    .catch(console.error);
+    .catch(logger.error);
 }
