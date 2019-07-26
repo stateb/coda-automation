@@ -5,6 +5,19 @@ import asyncio
 import concurrent.futures
 from faucet import Faucet
 import CodaClient 
+import backoff
+import websockets 
+import logging
+import sys
+
+#Turn Down Discord Logging
+disc_log = logging.getLogger('discord')
+disc_log.setLevel(logging.INFO)
+
+
+# Configure Logging
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 LISTENING_CHANNELS = ["faucet"]
 FAUCET_APPROVE_ROLE = "faucet-approvers"
@@ -18,21 +31,28 @@ executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
 client = discord.Client()
 faucet = Faucet()
 
-
 SENT_TRANSACTION_THIS_BLOCK = False
 
 # This is a fix for a bug in the Daemon where the Nonce is
 # only incremented once per block, can be removed once it's fixed
 # NOTE: This means we can only send one faucet transaction per block. 
-async def new_block_callback():
+async def new_block_callback(message):
     global SENT_TRANSACTION_THIS_BLOCK
-    print("Got a block! Resetting the Boolean.")
-    SENT_TRANSACTION_THIS_BLOCK = True
+    SENT_TRANSACTION_THIS_BLOCK = False
+    logger.debug("Got a block! Resetting the Boolean to {}. {}".format(SENT_TRANSACTION_THIS_BLOCK, message))
+
 
 @client.event
 async def on_ready():
+    logger.info('We have logged in as {0.user}'.format(client))
+
+
+@client.event
+@backoff.on_exception(backoff.expo, OSError, max_tries=15)
+@backoff.on_exception(backoff.expo,  websockets.exceptions.ConnectionClosed)
+async def on_connect():
     # Call new block subscription
-    print('We have logged in as {0.user}'.format(client))
+    logger.debug("Reconnecting to Coda Daemon...")
     await faucet.new_block_subscribe(new_block_callback)
 
 @client.event
@@ -74,7 +94,7 @@ Once a mod approves, `100 CODA` will be sent to the requested address!
                 "channel": channel,
                 "requester": requester
             }
-            print(ACTIVE_REQUESTS)
+            logger.debug(ACTIVE_REQUESTS)
         # Otherwise, ignore this request
         else: 
             please_wait_text = "Hey {}, please wait or cancel your previous request for faucet funds!".format(requester.mention)
@@ -88,20 +108,20 @@ Once a mod approves, `100 CODA` will be sent to the requested address!
             if m and not SENT_TRANSACTION_THIS_BLOCK:
                 recipient = m.groups()[0]
                 amount = CODA_FAUCET_AMOUNT
-                print(recipient)
+                logger.debug(recipient)
                 # Request transaction approval from the mods 
                 approval_text = 'Hey {}, should I approve this transaction?: \nRequester: {}\nRecipient: {}\nAmount: {}\n *To cancel, react with ❌*'.format(mod_role, requester.mention, recipient, amount)
                 approval_message = await channel.send(approval_text)
 
                 # Check if a mod has approved the request
                 def check_approval(reaction, user):
-                    print("check approval", reaction)
-                    print(user.roles)
+                    logger.debug("check approval".format(reaction))
+                    logger.debug(user.roles)
                     return reaction.message.id == approval_message.id and FAUCET_APPROVE_ROLE in [str(x) for x in user.roles] and str(reaction.emoji) == '👍'
             
                 # Check if a user has cancelled their request
                 def check_cancel(reaction, user):
-                    print("check cancel", reaction, reaction.message.id == approval_message.id and user == message.author and str(reaction.emoji) == '❌')
+                    logger.debug("check cancel {}".format(reaction, reaction.message.id == approval_message.id and user == message.author and str(reaction.emoji) == '❌'))
                     return reaction.message.id == approval_message.id and user == message.author and str(reaction.emoji) == '❌'
                 
                 try:
@@ -135,18 +155,18 @@ Once a mod approves, `100 CODA` will be sent to the requested address!
                         output = await loop.run_in_executor(executor, faucet.faucet_transaction, recipient, amount)
                         # Collect output and return it to the channel
                         await channel.send('{} Transaction Sent! Output from Daemon: ```{}```'.format(requester.mention, output))
-                        print("Approved!")
+                        logger.debug("Approved!")
                         SENT_TRANSACTION_THIS_BLOCK = True
                     elif cancel in done:
                         await channel.send('Transaction Cancelled!')
-                        print("Cancelled...")
+                        logger.debug("Cancelled...")
             elif SENT_TRANSACTION_THIS_BLOCK: 
                 # If we get here then we have already sent a transaction this block and we should report an error
-                print("SENT TOO MANY REQUESTS THIS BLOCK, NOT SENDING!")
-                error_message = "I've sent too many transactions this block, please try again later!"
+                logger.debug("SENT TOO MANY REQUESTS THIS BLOCK, NOT SENDING!")
+                error_message = "I've sent too many transactions this block, please try again in a bit!"
                 await message.channel.send(error_message)
             else:
-                print(message.content)
+                logger.debug(message.content)
                 error_message = '''Grrrrr... Invalid Parameters!!
                 `$request <public-key>`
                 '''
