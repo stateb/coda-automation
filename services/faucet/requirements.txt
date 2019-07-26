@@ -1,5 +1,6 @@
 discord
-websockets
+websockets>=8.0
 asyncio
+backoff
 --extra-index-url https://o1labs.jfrog.io/o1labs/api/pypi/pypi/simple
-CodaClient==0.0.8
+CodaClient==0.0.10
