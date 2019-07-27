@@ -9,11 +9,11 @@ import backoff
 import websockets 
 import logging
 import sys
+import prometheus_client
 
 #Turn Down Discord Logging
 disc_log = logging.getLogger('discord')
 disc_log.setLevel(logging.INFO)
-
 
 # Configure Logging
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -33,6 +33,13 @@ faucet = Faucet()
 
 SENT_TRANSACTION_THIS_BLOCK = False
 
+# PROMETHEUS METRICS
+TRANSACTION_COUNT = prometheus_client.Counter("total_transactions_sent", "Number of Transactions sent since the process started")
+TOTAL_CODA_SENT = prometheus_client.Counter("total_coda_sent", "Amount of Coda sent since the process started")
+PROCESS_METRICS = prometheus_client.ProcessCollector(namespace='coda-faucet')
+PLEASE_WAIT_ERRORS = prometheus_client.Counter("total_please_wait_errors", "Number of 'Please Wait' Errors that have been issued")
+BLOCK_NOTIFICATIONS_RECIEVED = prometheus_client.Counter("total_block_notifications_recieved", "Number of Block Notifications recieved")
+
 # This is a fix for a bug in the Daemon where the Nonce is
 # only incremented once per block, can be removed once it's fixed
 # NOTE: This means we can only send one faucet transaction per block. 
@@ -40,11 +47,13 @@ async def new_block_callback(message):
     global SENT_TRANSACTION_THIS_BLOCK
     SENT_TRANSACTION_THIS_BLOCK = False
     logger.debug("Got a block! Resetting the Boolean to {}. {}".format(SENT_TRANSACTION_THIS_BLOCK, message))
+    BLOCK_NOTIFICATIONS_RECIEVED.inc()
 
 
 @client.event
 async def on_ready():
     logger.info('We have logged in as {0.user}'.format(client))
+    prometheus_client.start_http_server(8000)
 
 
 @client.event
@@ -115,13 +124,13 @@ Once a mod approves, `100 CODA` will be sent to the requested address!
 
                 # Check if a mod has approved the request
                 def check_approval(reaction, user):
-                    logger.debug("check approval".format(reaction))
+                    logger.debug("check approval {}".format(reaction))
                     logger.debug(user.roles)
                     return reaction.message.id == approval_message.id and FAUCET_APPROVE_ROLE in [str(x) for x in user.roles] and str(reaction.emoji) == '👍'
             
                 # Check if a user has cancelled their request
                 def check_cancel(reaction, user):
-                    logger.debug("check cancel {}".format(reaction, reaction.message.id == approval_message.id and user == message.author and str(reaction.emoji) == '❌'))
+                    logger.debug("check cancel {}".format((reaction, reaction.message.id == approval_message.id and user == message.author and str(reaction.emoji) == '❌')))
                     return reaction.message.id == approval_message.id and user == message.author and str(reaction.emoji) == '❌'
                 
                 try:
@@ -156,7 +165,13 @@ Once a mod approves, `100 CODA` will be sent to the requested address!
                         # Collect output and return it to the channel
                         await channel.send('{} Transaction Sent! Output from Daemon: ```{}```'.format(requester.mention, output))
                         logger.debug("Approved!")
+                        
+                        # Restrict any transactions being sent until next block
                         SENT_TRANSACTION_THIS_BLOCK = True
+
+                        #Increment metrics counters
+                        TRANSACTION_COUNT.labels(user=requester, recipient=recipient).inc()
+                        TOTAL_CODA_SENT.labels(user=requester, recipient=recipient).inc(amount)
                     elif cancel in done:
                         await channel.send('Transaction Cancelled!')
                         logger.debug("Cancelled...")
@@ -165,6 +180,9 @@ Once a mod approves, `100 CODA` will be sent to the requested address!
                 logger.debug("SENT TOO MANY REQUESTS THIS BLOCK, NOT SENDING!")
                 error_message = "I've sent too many transactions this block, please try again in a bit!"
                 await message.channel.send(error_message)
+
+                # Increment error metric
+                PLEASE_WAIT_ERRORS.labels(user=requester, recipient=recipient).inc()
             else:
                 logger.debug(message.content)
                 error_message = '''Grrrrr... Invalid Parameters!!
