@@ -10,6 +10,7 @@ import websockets
 import logging
 import sys
 import prometheus_client
+from prometheus_async.aio.web import start_http_server
 
 #Turn Down Discord Logging
 disc_log = logging.getLogger('discord')
@@ -34,11 +35,13 @@ faucet = Faucet()
 SENT_TRANSACTION_THIS_BLOCK = False
 
 # PROMETHEUS METRICS
-TRANSACTION_COUNT = prometheus_client.Counter("total_transactions_sent", "Number of Transactions sent since the process started")
-TOTAL_CODA_SENT = prometheus_client.Counter("total_coda_sent", "Amount of Coda sent since the process started")
-PROCESS_METRICS = prometheus_client.ProcessCollector(namespace='coda-faucet')
-PLEASE_WAIT_ERRORS = prometheus_client.Counter("total_please_wait_errors", "Number of 'Please Wait' Errors that have been issued")
-BLOCK_NOTIFICATIONS_RECIEVED = prometheus_client.Counter("total_block_notifications_recieved", "Number of Block Notifications recieved")
+TRANSACTION_COUNT = prometheus_client.Counter("faucet_transactions_sent", "Number of Transactions sent since the process started")
+TOTAL_CODA_SENT = prometheus_client.Counter("faucet_coda_sent", "Amount of Coda sent since the process started")
+PLEASE_WAIT_ERRORS = prometheus_client.Counter("faucet_please_wait_errors", "Number of 'Please Wait' Errors that have been issued")
+BLOCK_NOTIFICATIONS_RECIEVED = prometheus_client.Counter("faucet_block_notifications_recieved", "Number of Block Notifications recieved")
+
+
+FOO = prometheus_client.Counter("FOO", "FOO")
 
 # This is a fix for a bug in the Daemon where the Nonce is
 # only incremented once per block, can be removed once it's fixed
@@ -53,7 +56,8 @@ async def new_block_callback(message):
 @client.event
 async def on_ready():
     logger.info('We have logged in as {0.user}'.format(client))
-    prometheus_client.start_http_server(8000)
+    await start_http_server(port=8000)
+    FOO.inc()
 
 
 @client.event
@@ -74,6 +78,7 @@ async def on_message(message):
 
     # Check if the grumpus is listening
     if message.content.startswith('$tiny') and message.channel.name in LISTENING_CHANNELS:
+        FOO.inc()
         await message.channel.send('You summoned me?')
 
     # Help me grumpus! 
@@ -164,14 +169,15 @@ Once a mod approves, `100 CODA` will be sent to the requested address!
                         output = await loop.run_in_executor(executor, faucet.faucet_transaction, recipient, amount)
                         # Collect output and return it to the channel
                         await channel.send('{} Transaction Sent! Output from Daemon: ```{}```'.format(requester.mention, output))
+                        
+                        #Increment metrics counters
+                        TRANSACTION_COUNT.inc()
+                        TOTAL_CODA_SENT.inc(int(amount))
+
                         logger.debug("Approved!")
                         
                         # Restrict any transactions being sent until next block
                         SENT_TRANSACTION_THIS_BLOCK = True
-
-                        #Increment metrics counters
-                        TRANSACTION_COUNT.labels(user=requester, recipient=recipient).inc()
-                        TOTAL_CODA_SENT.labels(user=requester, recipient=recipient).inc(amount)
                     elif cancel in done:
                         await channel.send('Transaction Cancelled!')
                         logger.debug("Cancelled...")
@@ -182,7 +188,7 @@ Once a mod approves, `100 CODA` will be sent to the requested address!
                 await message.channel.send(error_message)
 
                 # Increment error metric
-                PLEASE_WAIT_ERRORS.labels(user=requester, recipient=recipient).inc()
+                PLEASE_WAIT_ERRORS.inc()
             else:
                 logger.debug(message.content)
                 error_message = '''Grrrrr... Invalid Parameters!!
