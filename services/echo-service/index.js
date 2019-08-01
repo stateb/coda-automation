@@ -12,15 +12,20 @@ const logger = require("./logger.js");
 
 // Set up our GraphQL client
 
-const { PORT = 0xc0da, PUBLIC_KEY, FEE = 5 } = process.env;
+const {
+  CODA_HOST = "localhost",
+  CODA_PORT = 0xc0da,
+  PUBLIC_KEY,
+  FEE = 5
+} = process.env;
 
 const httpLink = new HttpLink({
-  uri: `http://localhost:${PORT}/graphql`,
+  uri: `http://${CODA_HOST}:${CODA_PORT}/graphql`,
   fetch
 });
 
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:${PORT}/graphql`,
+  uri: `ws://${CODA_HOST}:${CODA_PORT}/graphql`,
   options: {
     reconnect: true
   },
@@ -50,6 +55,14 @@ const processedBlocks = [];
 const walletsQuery = gql`
   query ownedWallets {
     ownedWallets {
+      publicKey
+    }
+  }
+`;
+
+const addWalletMutation = gql`
+  mutation addWallet {
+    addWallet {
       publicKey
     }
   }
@@ -96,7 +109,11 @@ const sendPaymentMutation = gql`
 
 const extractPublicKey = ({ data }) => {
   if (data.ownedWallets.length === 0) {
-    throw Error("Node doesn't have any owned wallets.");
+    logger.info("Node doesn't have any owned wallets. Creating a new one...");
+    return client.mutate({ mutation: addWalletMutation }).then(({ data }) => {
+      logger.info("Successfully created wallet.");
+      return data.addWallet.publicKey;
+    });
   } else if (!data.ownedWallets[0].publicKey) {
     throw Error("Invalid public key for first owned wallet.");
   }
@@ -116,7 +133,10 @@ const reverseTransaction = txn =>
       }
     })
     .then(({ data }) => {
-      logger.info(`💸 Sent transaction to ${data.sendPayment.payment.to}`, data.sendPayment.payment);
+      logger.info(
+        `💸 Sent transaction to ${data.sendPayment.payment.to}`,
+        data.sendPayment.payment
+      );
     });
 
 const handleBlock = ({ data }, publicKey) => {
@@ -163,7 +183,7 @@ if (PUBLIC_KEY) {
   logger.info("Public key provided via PUBLIC_KEY.");
   subscribeToBlocks(PUBLIC_KEY);
 } else {
-  logger.info("No public key provided, querying GraphQL...");
+  logger.info("No public key provided, looking for existing wallets...");
   client
     .query({ query: walletsQuery })
     .then(extractPublicKey)
