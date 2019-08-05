@@ -82,8 +82,15 @@ async def on_message(message):
     # Mods-Only Status Command
     if message.content.startswith('$status') and message.channel.name in LISTENING_CHANNELS:
         if MOD_ROLE in [str(x) for x in message.author.roles]:
-            status = faucet.faucet_status()
-            await message.channel.send("```{}```".format(json.dumps(status, indent=2)))
+            status = faucet.faucet_status()["daemonStatus"]
+            status_text = '**Daemon Status**\nBlockchain Length: `{}`\nUptime: `{} seconds`\n# Peers: `{}`\nBest Consensus Time: `{}`\nConsensus Time Now: `{}`'.format(
+                status["blockchainLength"], 
+                status["uptimeSecs"], 
+                len(status["peers"]), 
+                status["consensusTimeBestTip"],
+                status["consensusTimeNow"]
+            )
+            await message.channel.send(status_text)
 
     # Help me grumpus! 
     if message.content.startswith('$help') and message.channel.name in LISTENING_CHANNELS:
