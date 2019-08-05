@@ -26,6 +26,7 @@ CODA_FAUCET_AMOUNT = "100"
 # who have requested faucet funds 
 ACTIVE_REQUESTS = {}
 DISCORD_API_KEY = os.environ.get("DISCORD_API_KEY")
+METRICS_PORT = os.environ.get("FAUCET_METRICS_PORT")
 
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
 client = discord.Client()
@@ -53,7 +54,7 @@ async def new_block_callback(message):
 @client.event
 async def on_ready():
     logger.info('We have logged in as {0.user}'.format(client))
-    prometheus_client.start_http_server(8000)
+    prometheus_client.start_http_server(METRICS_PORT)
 
 
 @client.event

@@ -12,7 +12,7 @@ COPY yarn.lock ./
 
 RUN yarn
 
-copy index.js /code/index.js
-copy logger.js /code/logger.js
+COPY index.js /code/index.js
+COPY logger.js /code/logger.js
 
 CMD ["/usr/bin/dumb-init", "node", "index.js"]
