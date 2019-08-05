@@ -19,6 +19,11 @@ class Faucet():
         self.logger.debug("New Block Subscription.")
         await self.coda.listen_new_blocks(FAUCET_PUBLIC_KEY, callback)
         
+    def faucet_status(self):
+        response = self.coda.get_daemon_status()
+        self.logger.debug("Getting Daemon Status: {}".format(response))
+        return response
+
     def faucet_transaction(self, recipient, amount): 
         """Sends a faucet transaction to a daemon located at DAEMON_HOST:DAEMON_PORT
         """

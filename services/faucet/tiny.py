@@ -1,6 +1,7 @@
 import discord
 import re
 import os
+import json
 import asyncio
 import concurrent.futures
 from faucet import Faucet
@@ -21,11 +22,13 @@ logger = logging.getLogger(__name__)
 
 LISTENING_CHANNELS = ["faucet"]
 FAUCET_APPROVE_ROLE = "faucet-approvers"
+MOD_ROLE = "mod"
 CODA_FAUCET_AMOUNT = "100"
 # A Dictionary to keep track of users
 # who have requested faucet funds 
 ACTIVE_REQUESTS = {}
 DISCORD_API_KEY = os.environ.get("DISCORD_API_KEY")
+METRICS_PORT = int(os.environ.get("FAUCET_METRICS_PORT"))
 
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
 client = discord.Client()
@@ -34,11 +37,11 @@ faucet = Faucet()
 SENT_TRANSACTION_THIS_BLOCK = False
 
 # PROMETHEUS METRICS
-TRANSACTION_COUNT = prometheus_client.Counter("total_transactions_sent", "Number of Transactions sent since the process started")
-TOTAL_CODA_SENT = prometheus_client.Counter("total_coda_sent", "Amount of Coda sent since the process started")
-PROCESS_METRICS = prometheus_client.ProcessCollector(namespace='coda-faucet')
-PLEASE_WAIT_ERRORS = prometheus_client.Counter("total_please_wait_errors", "Number of 'Please Wait' Errors that have been issued")
-BLOCK_NOTIFICATIONS_RECIEVED = prometheus_client.Counter("total_block_notifications_recieved", "Number of Block Notifications recieved")
+TRANSACTION_COUNT = prometheus_client.Counter("faucet_transactions_sent", "Number of Transactions sent since the process started")
+TOTAL_CODA_SENT = prometheus_client.Counter("faucet_coda_sent", "Amount of Coda sent since the process started")
+PROCESS_METRICS = prometheus_client.ProcessCollector(namespace='faucet')
+PLEASE_WAIT_ERRORS = prometheus_client.Counter("faucet_please_wait_errors", "Number of 'Please Wait' Errors that have been issued")
+BLOCK_NOTIFICATIONS_RECIEVED = prometheus_client.Counter("faucet_block_notifications_recieved", "Number of Block Notifications recieved")
 
 # This is a fix for a bug in the Daemon where the Nonce is
 # only incremented once per block, can be removed once it's fixed
@@ -53,7 +56,7 @@ async def new_block_callback(message):
 @client.event
 async def on_ready():
     logger.info('We have logged in as {0.user}'.format(client))
-    prometheus_client.start_http_server(8000)
+    prometheus_client.start_http_server(METRICS_PORT)
 
 
 @client.event
@@ -76,6 +79,19 @@ async def on_message(message):
     if message.content.startswith('$tiny') and message.channel.name in LISTENING_CHANNELS:
         await message.channel.send('You summoned me?')
 
+    # Mods-Only Status Command
+    if message.content.startswith('$status') and message.channel.name in LISTENING_CHANNELS:
+        if MOD_ROLE in [str(x) for x in message.author.roles]:
+            status = faucet.faucet_status()["daemonStatus"]
+            status_text = '**Daemon Status**\nBlockchain Length: `{}`\nUptime: `{} seconds`\n# Peers: `{}`\nBest Consensus Time: `{}`\nConsensus Time Now: `{}`'.format(
+                status["blockchainLength"], 
+                status["uptimeSecs"], 
+                len(status["peers"]), 
+                status["consensusTimeBestTip"],
+                status["consensusTimeNow"]
+            )
+            await message.channel.send(status_text)
+
     # Help me grumpus! 
     if message.content.startswith('$help') and message.channel.name in LISTENING_CHANNELS:
         help_string = '''
@@ -87,7 +103,7 @@ Just send me a message in the #faucet channel with the following contents:
 Once a mod approves, `100 CODA` will be sent to the requested address!
         '''
 
-        await message.channel.send(help_string)
+        await message.channel.send("```{}```".format(help_string))
 
     # Act as a faucet, responding to messages of the form: 
     #   $request <public-key>
