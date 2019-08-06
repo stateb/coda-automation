@@ -24,6 +24,11 @@ class Faucet():
         self.logger.debug("Getting Daemon Status: {}".format(response))
         return response
 
+    def faucet_wallet(self):
+        response = self.coda.get_wallet(pk=FAUCET_PUBLIC_KEY)
+        self.logger.debug("Getting Faucet Wallet: {}".format(response))
+        return response
+
     def faucet_transaction(self, recipient, amount): 
         """Sends a faucet transaction to a daemon located at DAEMON_HOST:DAEMON_PORT
         """
