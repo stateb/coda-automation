@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 LISTENING_CHANNELS = ["faucet"]
 FAUCET_APPROVE_ROLE = "faucet-approvers"
 MOD_ROLE = "mod"
-CODA_FAUCET_AMOUNT = "100"
+CODA_FAUCET_AMOUNT = os.environ.get("FAUCET_AMOUNT")
 # A Dictionary to keep track of users
 # who have requested faucet funds 
 ACTIVE_REQUESTS = {}
@@ -83,12 +83,27 @@ async def on_message(message):
     if message.content.startswith('$status') and message.channel.name in LISTENING_CHANNELS:
         if MOD_ROLE in [str(x) for x in message.author.roles]:
             status = faucet.faucet_status()["daemonStatus"]
-            status_text = '**Daemon Status**\nBlockchain Length: `{}`\nUptime: `{} seconds`\n# Peers: `{}`\nBest Consensus Time: `{}`\nConsensus Time Now: `{}`'.format(
+            wallet = faucet.faucet_wallet()["wallet"]
+            status_text = '''
+**Daemon Status**
+Blockchain Length: `{}`
+Uptime: `{} seconds`
+# Peers: `{}`
+Best Consensus Time: `{}`
+Consensus Time Now: `{}`
+**Faucet** 
+Balance (Total): `{}` Coda
+Balance (Unknown): `{}` Coda
+Nonce: `{}`
+            '''.format(
                 status["blockchainLength"], 
                 status["uptimeSecs"], 
                 len(status["peers"]), 
                 status["consensusTimeBestTip"],
-                status["consensusTimeNow"]
+                status["consensusTimeNow"],
+                wallet["balance"]["total"],
+                wallet["balance"]["unknown"],
+                wallet["nonce"]
             )
             await message.channel.send(status_text)
 
@@ -183,11 +198,11 @@ Once a mod approves, `100 CODA` will be sent to the requested address!
                         logger.debug("Approved!")
                         
                         # Restrict any transactions being sent until next block
-                        SENT_TRANSACTION_THIS_BLOCK = True
+                        #SENT_TRANSACTION_THIS_BLOCK = True
 
                         #Increment metrics counters
-                        TRANSACTION_COUNT.labels(user=requester, recipient=recipient).inc()
-                        TOTAL_CODA_SENT.labels(user=requester, recipient=recipient).inc(amount)
+                        TRANSACTION_COUNT.inc()
+                        TOTAL_CODA_SENT.inc(int(amount))
                     elif cancel in done:
                         await channel.send('Transaction Cancelled!')
                         logger.debug("Cancelled...")
@@ -198,7 +213,7 @@ Once a mod approves, `100 CODA` will be sent to the requested address!
                 await message.channel.send(error_message)
 
                 # Increment error metric
-                PLEASE_WAIT_ERRORS.labels(user=requester, recipient=recipient).inc()
+                PLEASE_WAIT_ERRORS.inc()
             else:
                 logger.debug(message.content)
                 error_message = '''Grrrrr... Invalid Parameters!!
