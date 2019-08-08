@@ -65,8 +65,10 @@ for region in regions:
       i.tags['Name'] = 'NONE'
 
     output[groupname].append(i.public_dns_name)
-    comments[groupname][i.public_dns_name] = "# %s\t%s\t%s\t%s\t%s" % (i.tags['Name'], myregion, i.instance_type, i.ip_address, i.launch_time)
-
+    try:
+      comments[groupname][i.public_dns_name] = "# %s\t%s\t%s\t%s\t%s" % (i.tags['Name'], myregion, i.instance_type, i.ip_address, i.launch_time)
+    except:
+      comments[groupname][i.public_dns_name] = "# MISSING DATA"
 for group in output:
   print("[%s]" % group)
   hostlist = output[group]
