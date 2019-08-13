@@ -9,3 +9,4 @@ resource "aws_route53_record" "net_name" {
   ttl     = "300"
   records = "${module.seed.public_ip}"
 }
+
