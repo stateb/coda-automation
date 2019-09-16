@@ -6,6 +6,7 @@ FILET_MIGNON_STAKING_CHALLENGE = {
 
 }
 
+# For Community Members
 OBSERVED_COMMUNITY_PUBLIC_KEYS = {
     'tNci9ERxHGkemqBmNxEWTcPgY5sn347yq6BFcUGTpve6aJpaDUgaaTEQ3rfAgYeK7KhzEbYoJvSbqQ8u88aBNtu8ALVcEeRo4ei6sGjxMsmBAJW7vwW57KLzrvou4YEMA3saq6Xqtpg3sb': 'o1-node-snark-coordinator',
     'tNciczxpMfZ4eW1ZPP9NVK2vxcm9cCHvTBWMe8Nskn2A25P1YqcdvFCD5LvgngraiCmAsnC8zWAiv5pwMYjrUwpMNYDePMQYiXX7HVMjrnB1JkEckyayvsAm2Bo4EQBWbHXD5Cxp65PZy5': 'o1-node-faucet-tiny',
@@ -201,4 +202,9 @@ OBSERVED_COMMUNITY_PUBLIC_KEYS = {
     'tNcikYgqmmqwFuvMpsaNxNppNLgGG9eNXHvxuwvMNWerJTk41hVPKsQa28mEyCqJkk8xjgddB9eCsF2YKmFLJG5p42bvnZYmjdqz2TPXXhRRWDbpfx8nTJnS5p6QDfy76MsWGnndZ8jAiw': 'y3v63n',
     'tNcikquYryJPeCTEFEtUj85rdZkuLsH5QJV1kbY1xJQr6RcrHSHMtAKqbZ3Xz5rCzTXLzaJvixco1V4zgZJNPxArSmD783dhs9zaB8U1txc8LPGf5ecyLuB3Z3vR3CbETrCaEGN4ANEyWt': 'novy',
     'tNcimm3CnFATS2WUL9WJuGv8nXzsRTLCQCcuCbAAoixT5KeA8cUhTkddcyEBikG4baP3MMUMgTxm2R2L9C3HMcWA626qrRDZXgFVX5nvZeFPH7WcMdVmN9tSrvrLB6YPig3XHeKV7Hu9rP': 'Alexander',
+}
+
+# For O(1) Staff 
+OBSERVED_STAFF_PUBLIC_KEYS {
+
 }
