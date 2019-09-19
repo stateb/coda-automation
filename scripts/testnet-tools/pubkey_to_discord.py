@@ -10,6 +10,7 @@ FILET_MIGNON_STAKING_CHALLENGE = {
     'tNciW2rBoTssVzvrwEc6CkRHCZznKP94ZfAPvZP3pmAjhGBofjvZiom22pBjFNWoVJA8PAUcyYdStZHnvYYd3qyVqobzWiBFib7zTkrnRSGR7yyW5rr13JSZjhSgSL3hk8focXn2mhp2HS': 'y3v63n#0177',
     'tNciP3S9u596zcmc6Mm2hT3AXXNt2HisaEzkHjrwGXhADYCZaqgRxxw4DUtUx4VtQahxeMEZHN3a2RYmCxHiArNSPSFmq5ooYAhZh3U2dpEn7zK214ycJee1YnoaugMrGcy5TXc3YxA42d': 'windows',
     'tNci2apfQDHNoaGXnBZ4TM6XDTTrcMGNe2BHK7XMWMCZ9KoXbW4MPw86dmmsgjRBNTv62AA7HvEhGH7CnjJYCxfj2KJ52nC3UZrfLW8qSzbCzuFNJThCc2fx6vbhpBSSoMKVnxTEwEvpbU': 'LatentHero#5466',
+    'tNciVRxhXhJq78LFxg8acp7VwVSXtJMsQgyyASr9q9vXMcJ4whwawrtz1TZyH8TXHyy68cPatDR5xRn5G2o7cm8kWYMbooPaTVpte2vYsd7pqFDAJ6QAYTD8Ro1FPmzQdvCZHdhdMfdZqi': 'novy',
 }
 
 # For Community Members
