@@ -10,6 +10,7 @@ FILET_MIGNON_STAKING_CHALLENGE = {
     'tNciW2rBoTssVzvrwEc6CkRHCZznKP94ZfAPvZP3pmAjhGBofjvZiom22pBjFNWoVJA8PAUcyYdStZHnvYYd3qyVqobzWiBFib7zTkrnRSGR7yyW5rr13JSZjhSgSL3hk8focXn2mhp2HS': 'y3v63n#0177',
     'tNciP3S9u596zcmc6Mm2hT3AXXNt2HisaEzkHjrwGXhADYCZaqgRxxw4DUtUx4VtQahxeMEZHN3a2RYmCxHiArNSPSFmq5ooYAhZh3U2dpEn7zK214ycJee1YnoaugMrGcy5TXc3YxA42d': 'windows',
     'tNci2apfQDHNoaGXnBZ4TM6XDTTrcMGNe2BHK7XMWMCZ9KoXbW4MPw86dmmsgjRBNTv62AA7HvEhGH7CnjJYCxfj2KJ52nC3UZrfLW8qSzbCzuFNJThCc2fx6vbhpBSSoMKVnxTEwEvpbU': 'LatentHero#5466',
+    'tNciaKqn2vMY7JA66AHEP1bupBcsnPYeFM58SorCWL78pGoVKrM9r7j968a9BaqmEqH2hx8UCCURy8op27HFE9auLfesTbu4u7MmRQmsGVmWhMfXSqpTQpmkcjzW7hd4Bc44G32jv2SLLS': 'Matt Harrop / Figment Network',
 }
 
 # For Community Members
