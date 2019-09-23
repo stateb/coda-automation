@@ -48,7 +48,7 @@ EXTERNAL_IP='{{ ec2_ip_address }}'
 CODA_RPCPORT=8301
 CODA_EXTPORT=$((CODA_RPCPORT + 1))
 CODA_PEERPORT=$((CODA_RPCPORT + 2))
-CODA_QLPORT=$((CODA_RPCPORT + 3))
+CODA_QLPORT=3085
 PUBLIC_KEY='tNci9ERxHGkemqBmNxEWTcPgY5sn347yq6BFcUGTpve6aJpaDUgaaTEQ3rfAgYeK7KhzEbYoJvSbqQ8u88aBNtu8ALVcEeRo4ei6sGjxMsmBAJW7vwW57KLzrvou4YEMA3saq6Xqtpg3sb'
 
 # Set offset if it is being used
@@ -64,7 +64,7 @@ CODA_SEEDLIST+="{% for host in groups['tag_testnet_' + netname]  %}-peer {{ host
 # Common CLI options for all roles
 CLI_COMMON="\
  -background \
- -tracing -no-bans -log-json -log-level Trace \
+ -tracing -log-json -log-level Trace \
  -client-port ${CODA_RPCPORT} \
  -external-port ${CODA_EXTPORT} \
  -config-directory /home/admin/test-coda \
@@ -88,8 +88,7 @@ case $CODA_ROLE in
     ;;
 "blockproducer")
     CLI_ROLE="${CODA_SEEDLIST} \
-    -propose-key /home/admin/wallet-keys/proposerkey \
-    -unsafe-track-propose-key "
+    -propose-key /home/admin/wallet-keys/proposerkey "
     ;;
 "archive")
     CLI_ROLE="${CODA_SEEDLIST} \
