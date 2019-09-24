@@ -1,8 +1,9 @@
 
-# Insert Your Key Below for the "Filet Mignon" Testnet Challenge
+# Insert Your Key Below for the "Filet Mignon" Testnet Staking Challenge
 # Example:
 #   'tNciczxpMfZ4eW1ZPP9NVK2vxcm9cCHvTBWMe8Nskn2A25P1YqcdvFCD5LvgngraiCmAsnC8zWAiv5pwMYjrUwpMNYDePMQYiXX7HVMjrnB1JkEckyayvsAm2Bo4EQBWbHXD5Cxp65PZy5': 'DISCORD_USERNAME#1234',
 FILET_MIGNON_STAKING_CHALLENGE = {
+    'tNcidjEVHaJdtzPzXBN1zy3cx2s6LMbSYn4amM2GLTbfGv5PbgAuXLj53h3UeCDX8PADP5QQc4rapzXtxE5UbKCGL81sPwQCMsHVbu7LkQ5eUifNRtMjUufCbLLoWKQFRT39bvP2RpTD4P': '_pk_#9983',
     'tNci9bk98Z8c68PcRkZGTvAmkTU4ACZX4JcWNAr6Wd84MyKPjuMaF7mRocxJKMZ7Az7EddLq3WqU1ZVCYEopWppkBZwH1EZ6FPfRWHDKQ62dZw6hW5hUAS7sgXvy95WfrL3xoWVthF8DYh': 'Codonyat#0002',
     'tNciQrhuigw64wbjDZZ9nvhZJAbfemYTgUnukY8aCmtjmuUomxDxteHEgtLaXVSNQaf127ShEYCMrxWS4zxNnRye9orRnoyPoXJUhzv5PiMRn5W2SvhUx4krm9zsw62Z9v958qnko9Awpx': 'Gordon Freeman#4502',
     'tNci4dpqGY9UsWrCNPJEua6FdGyk2KFqBC8ovC5EdGZ8gUiVQcKw8tdVEBma86yGiXY4gDFdwHJSJuCnzn4ZyH9CEuz8FoGnRgpzUj5UVjMR62GDB2UJNo1B5qC2gLZKK4bXRc9XU1wkqT': 'Star.LI',
