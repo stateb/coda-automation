@@ -5,7 +5,6 @@ import subprocess
 import json
 import time
 import sys
-import graphyte
 import math
 
 
