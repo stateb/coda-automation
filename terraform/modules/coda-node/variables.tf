@@ -86,3 +86,8 @@ variable "use_eip" {
   description = "If true, apply EIP"
   default     = true
 }
+
+variable "prometheus_security_group" {
+  description = "A Security Group ID used for whitelisting prometheus"
+  default = "sg-02db39d37afc5bde2"
+}
