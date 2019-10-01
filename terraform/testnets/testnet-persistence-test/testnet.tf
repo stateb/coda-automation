@@ -1,14 +1,14 @@
 locals {
-  netname      = "nathans-playground"
+  netname      = "persistence-test"
   aws_key_name = "testnet"
   coda_repo    = "unstable"
-  coda_version = "229876-release-0.0.8-beta-7396272b-PV666e8b6c"  # Note: '*' gets latest when specifying version
+  coda_version = "234861-refactor-tfc-extensions-131eb602-PV1dd8ef5d"  # Note: '*' gets latest when specifying version
 }
 
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "test-net/terraform-fillet-mignon.tfstate"
+    key     = "test-net/terraform-persistence-test.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"

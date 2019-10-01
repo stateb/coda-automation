@@ -33,6 +33,7 @@ resource "aws_instance" "coda_node" {
     Name = "${var.netname}_${var.region}_${var.rolename}_${count.index}"
     role = "${var.netname}_${var.rolename}"
     testnet = "${var.netname}"
+    module = "coda-node"
   }
 
   # Default root is 8GB
