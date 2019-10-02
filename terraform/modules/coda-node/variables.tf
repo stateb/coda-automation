@@ -87,7 +87,7 @@ variable "use_eip" {
   default     = true
 }
 
-variable "prometheus_security_group" {
-  description = "A Security Group ID used for whitelisting prometheus"
-  default = "sg-02db39d37afc5bde2"
+variable "prometheus_cidr_blocks" {
+  description = "One or more CIDR Blocks in use by Prometheus"
+  default = ["54.190.198.129/32", "52.10.69.244/32"]
 }

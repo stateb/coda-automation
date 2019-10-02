@@ -46,7 +46,8 @@ resource "aws_security_group" "coda_sg" {
     description = "Prometheus Monitor"
     from_port   = "10000"
     to_port = "10000"
-    security_groups = "${var.prometheus_security_group}"
+    protocol = "tcp"
+    cidr_blocks = "${var.prometheus_cidr_blocks}"
   }
 
   egress {
