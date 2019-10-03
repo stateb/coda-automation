@@ -49,6 +49,7 @@ CODA_RPCPORT=8301
 CODA_EXTPORT=$((CODA_RPCPORT + 1))
 CODA_PEERPORT=$((CODA_RPCPORT + 2))
 CODA_QLPORT=3085
+CODA_METRICS_PORT=10000
 PUBLIC_KEY='tdNDs39Vk2rLLy9o43yNVBFrouEY9p49SHQjSyV4vvX7wpi52x1k3Eykg8soVmwLFDqJBfF3vvKWZuz2xjaQT9opUA5P2miTpJwP1RGu9vm2mM1gFcZxNd1fHBY8Jggezr7We9qCShZwCY'
 
 # Set offset if it is being used
@@ -69,7 +70,8 @@ CLI_COMMON="\
  -external-port ${CODA_EXTPORT} \
  -config-directory /home/admin/test-coda \
  -external-ip ${EXTERNAL_IP} \
- -rest-port ${CODA_QLPORT} "
+ -rest-port ${CODA_QLPORT} \
+ -metrics-port ${CODA_METRICS_PORT} "
 
 # Main start
 case $CODA_ROLE in
