@@ -28,6 +28,12 @@ variable "coda_version" {
   default = "0.0.1-release-beta-0d13213e"
 }
 
+variable "coda_variant" {
+  description = "The variant (build profile) of the Coda Deb to install"
+  type  = string
+  default = "testnet-postake-medium-curves"
+}
+
 variable "port_rpc" {
   description = "Port RPC protocol communicates over"
   type        = number
