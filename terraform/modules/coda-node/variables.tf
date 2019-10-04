@@ -46,6 +46,12 @@ variable "port_dht" {
   default     = 8303
 }
 
+variable "port_libp2p" {
+  description = "Port libp2p protocol communicates over"
+  type        = number
+  default     = 28675
+}
+
 variable "port_ql" {
   description = "Port GraphQL endpoint is listening on"
   type        = number
@@ -85,4 +91,9 @@ variable "server_count" {
 variable "use_eip" {
   description = "If true, apply EIP"
   default     = true
+}
+
+variable "prometheus_cidr_blocks" {
+  description = "One or more CIDR Blocks in use by Prometheus"
+  default = ["54.190.198.129/32", "52.10.69.244/32"]
 }

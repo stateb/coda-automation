@@ -35,11 +35,27 @@ resource "aws_security_group" "coda_sg" {
   }
 
   ingress {
+    description = "TCP Peer Disovery - libp2p"
+    from_port   = "${var.port_libp2p}"
+    to_port     = "${var.port_libp2p}"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     description = "TCP ql"
     from_port   = "${var.port_ql}"
     to_port     = "${var.port_ql}"
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Prometheus Monitor"
+    from_port   = "10000"
+    to_port = "10000"
+    protocol = "tcp"
+    cidr_blocks = "${var.prometheus_cidr_blocks}"
   }
 
   egress {
