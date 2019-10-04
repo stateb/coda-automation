@@ -72,6 +72,7 @@ FILET_MIGNON_STAKING_CHALLENGE = {
     'tNcigfKwYD6Vs1H6L1XBivTNgxBYRJQgFEJmhEqDfJ1ABtD9iLRfBxqMLMruURQigs1R898gaUy77UzjtaFMn4q9rC7XKayemZnm4vZ8KAKSZLHrqcDDHYevWxwA8yf9gweQZN66wkMNSw': 'turbotrainedbamboo #3788',
     'tNcihEh77DbibdWrdGgTsrhSb3ccUm2cGGVDRitpxRKXjTP9f8KuxBoes9MBTxRH7rzoGA3Kzs27L2gmrBEppPTubX2AgN9GkBJ6fHGWBKyB39zhaemjWQFjdG4YZkGrESp7ZxNd9r2n3S': 'tarcieri | iqlusion.io#0590',
     'tNcik6XeAF6d2WXKuVb9TRjKV9Gqm2WK2kWVVGoR1VKPMSfLxzYhkH7YxCAVPHBLBwnMKinrGiBCynRPzML8SuMGtqG1mnE398wtYgLor2xMmYLc5PZbu2pimTmrmvbKLZLoiY7JaAUGds': 'Mishdmish#8101'
+    'tdNDetSonXJbJ2D9Cdi8psYknDuaGyZQ9eUC34zSrfFmV3H4JZtkbB2xhiCkY9AtuDQJwRvV2zFhLt42zS27gx5cpZF1pqVTpkmb2wSHPjiF117TjNu5ohsd7V6WwjJ3aeDUTrGVjRbs6B': 'Mikhail#7170'
 }
 
 # For Community Members
