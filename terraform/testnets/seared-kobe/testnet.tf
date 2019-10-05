@@ -1,14 +1,14 @@
 locals {
-  netname      = "fillet-mignon"
+  netname      = "seared-kobe"
   aws_key_name = "testnet"
   coda_repo    = "stable"
-  coda_version = "229876-release-0.0.8-beta-7396272b-PV666e8b6c"  # Note: '*' gets latest when specifying version
+  coda_version = "239733-release-0.0.9-beta-ad33c5c0-PVb8d1d240"  # Note: '*' gets latest when specifying version
 }
 
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "test-net/terraform-fillet-mignon.tfstate"
+    key     = "test-net/terraform-seared-kobe.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
@@ -93,7 +93,7 @@ module "us-east-1-seedjoiner" {
 module "us-west-2-archive" {
   source        = "../../modules/coda-node"
   region        = "us-west-2"
-  server_count  = 2
+  server_count  = 1
   instance_type = "c5.4xlarge"
   custom_ami    = "ami-09d31fc66dcb58522"
   netname       = "${local.netname}"

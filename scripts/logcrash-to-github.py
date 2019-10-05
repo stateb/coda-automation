@@ -5,6 +5,9 @@ import json
 import os
 import sys
 import requests
+from socket import gethostname
+import hashlib
+import re
 
 # Authentication for user filing issue
 USE_GITHUB = True
@@ -22,7 +25,21 @@ except KeyError:
 
 # The repository to add this issue to
 REPO_OWNER = 'CodaProtocol'
-REPO_NAME  = 'coda'
+REPO_NAME = 'coda'
+
+
+""" Mask out actual line numbers and collumns, generate a signature based on stripped data """
+
+
+def error_sig(string):
+    output = ''
+    for line in string.splitlines(True):
+        if 'Called' in line or 'Raised' in line:
+            line = re.sub("line (\d+), characters (\d+)-(\d+)",
+                          "line HIDDEN, characters HIDDEN", line)
+        output += line
+    sig = hashlib.md5(output.encode('utf-8')).hexdigest()
+    return(sig)
 
 
 def make_github_issue(title, body=None, labels=None):
@@ -46,6 +63,7 @@ def make_github_issue(title, body=None, labels=None):
         print ('Could not create Issue {0:s}'.format(title))
         print ('Response:', r.content)
 
+
 def yes_or_no(question):
     while "the answer is invalid":
         try:
@@ -60,17 +78,20 @@ def yes_or_no(question):
         elif reply[0] == 'n':
             return False
 
+
 if __name__ == "__main__":
     crashdirs = glob('test-coda-CRASH-*/coda.log')
 
     seen_exns = []
     for crashdir in crashdirs:
-        with open(crashdir, encoding = "ISO-8859-1") as fp:
+        with open(crashdir, encoding="ISO-8859-1") as fp:
             for count, line in enumerate(fp):
                 if 'Fatal' in line:
                     data = json.loads(line)
                     try:
-                        exn = data['metadata']['exn'].replace("\\n",'').replace('\"','')[:120]
+                        exn_1000 = "".join(
+                            data['metadata']['exn'].splitlines())[:1000]
+                        exn = exn_1000[:130] + '...'
                     except KeyError:
                         exn = 'Unknown'
 
@@ -83,20 +104,25 @@ if __name__ == "__main__":
                     print('-'*80)
                     print(crashdir)
                     print('New: %s' % exn)
-                    print(json.dumps(data, indent=4, sort_keys=True))
-
+                    body = 'Details:\n\n'
+                    body += 'Hash: %s\n' % error_sig(exn)
+                    body += 'Crash Timestamp: %s\n' % data['timestamp']
+                    body += 'Host: `%s`\n\n' % gethostname()
+                    body += 'Partial trace:\n'
+                    body += '```\n'
+                    body += exn_1000.replace('    ', '\n')
+                    body += '...'
+                    body += '\n```'
+                    print(body)
 
                     if sys.stdin.isatty():
                         # running interactively
                         if yes_or_no('Create new issue?'):
                             # FIXME - how to attach gz to issue.
                             title = 'TESTING - CRASH - TESTNET - %s' % exn.strip()
-                            body = 'Details:\n```'
-                            body += json.dumps(data, indent=4, sort_keys=True)
-                            body += '\n```'
                             if USE_GITHUB:
                                 make_github_issue(title=title,
-                                        body=body,
-                                        labels=['testnet', 'robot'])
+                                                  body=body,
+                                                  labels=['testnet', 'robot'])
                     else:
                         print('Running non-interactively.')

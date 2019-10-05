@@ -28,6 +28,12 @@ variable "coda_version" {
   default = "0.0.1-release-beta-0d13213e"
 }
 
+variable "coda_variant" {
+  description = "The variant (build profile) of the Coda Deb to install"
+  type  = string
+  default = "testnet-postake-medium-curves"
+}
+
 variable "port_rpc" {
   description = "Port RPC protocol communicates over"
   type        = number
@@ -44,6 +50,12 @@ variable "port_dht" {
   description = "Port DHT protocol communicates over"
   type        = number
   default     = 8303
+}
+
+variable "port_libp2p" {
+  description = "Port libp2p protocol communicates over"
+  type        = number
+  default     = 28675
 }
 
 variable "port_ql" {
@@ -85,4 +97,9 @@ variable "server_count" {
 variable "use_eip" {
   description = "If true, apply EIP"
   default     = true
+}
+
+variable "prometheus_cidr_blocks" {
+  description = "One or more CIDR Blocks in use by Prometheus"
+  default = ["54.190.198.129/32", "52.10.69.244/32"]
 }
